@@ -1,0 +1,20 @@
+version: '3.4'
+
+services:
+  sql.data:
+    image: microsoft/mssql-server-linux:2017-latest
+
+  crawler.api:
+    image: ${DOCKER_REGISTRY}crawlerapi
+    build:
+      context: .
+      dockerfile: src/Services/Crawler.API/Dockerfile
+
+
+  tvshows.api:
+    image: ${DOCKER_REGISTRY}tvshowsapi
+    build:
+      context: .
+      dockerfile: src/Services/TVShows.API/Dockerfile
+    depends_on:
+      - sql.data

@@ -1,15 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model;
+using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.ViewModel;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
-using TVShows.API.Infrastructure;
-using TVShows.API.Model;
-using TVShows.API.ViewModel;
 
-namespace TVShows.API.Controllers
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

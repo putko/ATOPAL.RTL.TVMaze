@@ -1,15 +1,15 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF.Services;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF.Utilities;
+using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
-using BuildingBlocks.EventBus.Abstractions;
-using BuildingBlocks.EventBus.Events;
-using BuildingBlocks.IntegrationEventLogEF.Services;
-using BuildingBlocks.IntegrationEventLogEF.Utilities;
-using TVShows.API.Infrastructure;
 using System;
 using System.Data.Common;
 using System.Threading.Tasks;
 
-namespace TVShows.API.IntegrationEvents
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.IntegrationEvents
 {
     public class TVShowsIntegrationEventService : ITVShowsIntegrationEventService
     {

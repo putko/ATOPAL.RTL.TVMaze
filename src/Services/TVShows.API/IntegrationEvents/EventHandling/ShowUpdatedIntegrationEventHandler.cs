@@ -1,11 +1,11 @@
-﻿using BuildingBlocks.EventBus.Abstractions;
+﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
+using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.IntegrationEvents.Events;
+using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using TVShows.API.IntegrationEvents.Events;
-using TVShows.API.Model;
 
-namespace TVShows.API.IntegrationEvents.EventHandling
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.IntegrationEvents.EventHandling
 {
     public class ShowUpdatedIntegrationEventHandler : IIntegrationEventHandler<ShowUpdatedIntegrationEvent>
     {

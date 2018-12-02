@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using BuildingBlocks.EventBus.Abstractions;
-using BuildingBlocks.EventBus.Events;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
 
 namespace BuildingBlocks.EventBus
 {

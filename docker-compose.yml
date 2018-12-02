@@ -4,12 +4,8 @@ services:
   sql.data:
     image: microsoft/mssql-server-linux:2017-latest
 
-  crawler.api:
-    image: ${DOCKER_REGISTRY}crawlerapi
-    build:
-      context: .
-      dockerfile: src/Services/Crawler.API/Dockerfile
-
+   rabbitmq:
+    image: rabbitmq:3-management-alpine
 
   tvshows.api:
     image: ${DOCKER_REGISTRY}tvshowsapi
@@ -18,3 +14,9 @@ services:
       dockerfile: src/Services/TVShows.API/Dockerfile
     depends_on:
       - sql.data
+  tvmaze.scrapper:
+    image: ${DOCKER_REGISTRY}tvmazescrapper
+    build:
+      context: .
+      dockerfile: src/Services/TVMaze.Scrapper/Dockerfile
+

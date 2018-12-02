@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common</AssemblyName>
+    <RootNamespace>AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

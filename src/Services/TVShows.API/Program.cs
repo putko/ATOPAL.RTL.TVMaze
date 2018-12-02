@@ -1,12 +1,12 @@
-﻿using BuildingBlocks.IntegrationEventLogEF;
+﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF;
+using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using System.IO;
-using TVShows.API.Infrastructure;
 
-namespace TVShows.API
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API
 {
     public class Program
     {

@@ -1,17 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using BuildingBlocks.EventBus;
-using BuildingBlocks.EventBus.Events;
-using Newtonsoft.Json;
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
 
-namespace BuildingBlocks.IntegrationEventLogEF.Services
+namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF.Services
 {
     public class IntegrationEventLogService : IIntegrationEventLogService
     {

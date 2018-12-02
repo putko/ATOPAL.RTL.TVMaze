@@ -1,9 +1,12 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using BuildingBlocks.EventBus.Abstractions;
-using BuildingBlocks.IntegrationEventLogEF;
-using BuildingBlocks.IntegrationEventLogEF.Services;
-using EventBusRabbitMQ;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF.Services;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ;
+using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure;
+using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.Filters;
+using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.IntegrationEvents;
+using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -16,14 +19,8 @@ using RabbitMQ.Client;
 using System;
 using System.Data.Common;
 using System.Reflection;
-using TVShows.API.Infrastructure;
-using TVShows.API.Infrastructure.Filters;
-using TVShows.API.IntegrationEvents;
-using TVShows.API.IntegrationEvents.EventHandling;
-using TVShows.API.IntegrationEvents.Events;
-using TVShows.API.Model;
 
-namespace TVShows.API
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API
 {
     public class Startup
     {

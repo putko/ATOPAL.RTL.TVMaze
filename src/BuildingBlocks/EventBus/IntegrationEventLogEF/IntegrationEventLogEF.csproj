@@ -2,6 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <AssemblyName>AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF</AssemblyName>
+    <RootNamespace>AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,7 +15,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\EventBus.Common\EventBus.Common.csproj" />
+    <ProjectReference Include="..\EventBus.Common\Common.csproj" />
   </ItemGroup>
 
 </Project>

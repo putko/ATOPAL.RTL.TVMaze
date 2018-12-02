@@ -1,7 +1,6 @@
-﻿using BuildingBlocks.EventBus.Events;
-using System;
+﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
 
-namespace BuildingBlocks.EventBus.Abstractions
+namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions
 {
     public interface IEventBus
     {

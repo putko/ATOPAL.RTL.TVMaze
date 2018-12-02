@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common;
+using System;
 
 namespace BuildingBlocks.EventBus
 {

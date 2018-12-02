@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TVShows.API.ViewModel
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.ViewModel
 {
     public class PaginatedItemsViewModel<TEntity> where TEntity : class
     {

@@ -1,7 +1,7 @@
 ﻿using System;
 using Newtonsoft.Json;
 
-namespace BuildingBlocks.EventBus.Events
+namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events
 {
     public class IntegrationEvent
     {

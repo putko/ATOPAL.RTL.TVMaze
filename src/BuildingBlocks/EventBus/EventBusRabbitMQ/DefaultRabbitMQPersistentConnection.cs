@@ -10,7 +10,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Text;
 
-namespace EventBusRabbitMQ
+namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ
 {
     public class DefaultRabbitMQPersistentConnection
       : IRabbitMQPersistentConnection

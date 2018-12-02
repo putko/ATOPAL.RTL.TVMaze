@@ -1,7 +1,7 @@
-﻿using BuildingBlocks.EventBus.Events;
+﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
 using System.Threading.Tasks;
 
-namespace TVShows.API.IntegrationEvents
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.IntegrationEvents
 {
     public interface ITVShowsIntegrationEventService
     {

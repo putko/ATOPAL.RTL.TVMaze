@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TVShows.API.Infrastructure.ActionResult
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.ActionResult
 {
     public class InternalServerErrorObjectResult : ObjectResult
     {

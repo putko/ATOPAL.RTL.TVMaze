@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace TVShows.API.Migrations
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
 {
     public partial class MyFirstMigration : Migration
     {

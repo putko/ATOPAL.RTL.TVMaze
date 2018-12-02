@@ -1,10 +1,10 @@
-﻿using BuildingBlocks.EventBus.Abstractions;
-using BuildingBlocks.EventBus.Events;
+﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
 using System;
 using System.Collections.Generic;
 using static BuildingBlocks.EventBus.InMemoryEventBusSubscriptionsManager;
 
-namespace BuildingBlocks.EventBus
+namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
 {
     public interface IEventBusSubscriptionsManager
     {

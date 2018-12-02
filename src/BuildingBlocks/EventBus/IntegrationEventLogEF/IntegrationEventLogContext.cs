@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace BuildingBlocks.IntegrationEventLogEF
+namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF
 {
     public class IntegrationEventLogContext : DbContext
     {       

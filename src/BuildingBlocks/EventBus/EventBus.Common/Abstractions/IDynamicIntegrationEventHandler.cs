@@ -1,10 +1,6 @@
-﻿using BuildingBlocks.EventBus.Abstractions;
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
-namespace BuildingBlocks.EventBus.Abstractions
+namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions
 {
     public interface IDynamicIntegrationEventHandler
     {

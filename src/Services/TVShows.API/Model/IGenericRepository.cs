@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
 
-namespace TVShows.API.Model
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model
 {
     public interface IGenericRepository<TEntity> where TEntity : EntityBase
     {

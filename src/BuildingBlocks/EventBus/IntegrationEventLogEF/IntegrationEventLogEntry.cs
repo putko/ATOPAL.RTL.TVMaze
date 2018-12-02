@@ -1,13 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text;
 using Newtonsoft.Json;
-using BuildingBlocks.EventBus.Events;
 using System.Linq;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
 
-namespace BuildingBlocks.IntegrationEventLogEF
+namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF
 {
     public class IntegrationEventLogEntry
     {

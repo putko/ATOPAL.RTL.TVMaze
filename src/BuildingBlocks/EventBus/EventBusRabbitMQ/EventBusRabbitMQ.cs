@@ -1,8 +1,8 @@
 ﻿using Autofac;
-using BuildingBlocks.EventBus.Abstractions;
-using BuildingBlocks.EventBus.Events;
-using EventBusRabbitMQ;
-using Microsoft.Extensions.DependencyInjection;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
+using BuildingBlocks.EventBus;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,16 +12,15 @@ using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using RabbitMQ.Client.Exceptions;
 using System;
-using System.Collections.Generic;
 using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace BuildingBlocks.EventBus.EventBusRabbitMQ
+namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ
 {
     public class EventBusRabbitMQ : IEventBus, IDisposable
     {
-        const string BROKER_NAME = "eshop_event_bus";
+        const string BROKER_NAME = "rtl_tvshows_event_bus";
 
         private readonly IRabbitMQPersistentConnection _persistentConnection;
         private readonly ILogger<EventBusRabbitMQ> _logger;

@@ -1,6 +1,6 @@
 ﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
 
-namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.IntegrationEvents.Events
+namespace AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.IntegrationEvents
 {
     public class ShowUpdatedIntegrationEvent : IntegrationEvent
     {

@@ -1,11 +1,10 @@
-﻿using BuildingBlocks.EventBus.Events;
+﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
-using System.Linq;
 using System.Threading.Tasks;
 
-namespace BuildingBlocks.IntegrationEventLogEF.Services
+namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF.Services
 {
     public interface IIntegrationEventLogService
     {

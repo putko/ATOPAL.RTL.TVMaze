@@ -1,8 +1,8 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TVShows.API.Model;
 
-namespace TVShows.API.Infrastructure.EntityConfigurations
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.EntityConfigurations
 {
     public class PersonEntityTypeConfiguration
           : IEntityTypeConfiguration<Person>

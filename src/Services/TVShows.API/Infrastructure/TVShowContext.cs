@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.EntityConfigurations;
+using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 using Microsoft.Extensions.Configuration;
 using System;
@@ -6,10 +8,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using TVShows.API.Infrastructure.EntityConfigurations;
-using TVShows.API.Model;
 
-namespace TVShows.API.Infrastructure
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure
 {
     public class TVShowContext : DbContext
     {
@@ -39,16 +39,5 @@ namespace TVShows.API.Infrastructure
 
             return new TVShowContext(optionsBuilder.Options);
         }
-        //public TVShowContext CreateDbContext(string[] args)
-        //{
-        //    IConfigurationRoot configuration = new ConfigurationBuilder()
-        //        .SetBasePath(Directory.GetCurrentDirectory())
-        //        .AddJsonFile("appsettings.json")
-        //        .Build();
-        //    var builder = new DbContextOptionsBuilder<TVShowContext>();
-        //    var connectionString = configuration.GetConnectionString("ConnectionString");
-        //    builder.UseSqlServer(connectionString);
-        //    return new TVShowContext(builder.Options);
-        //}
     }
 }

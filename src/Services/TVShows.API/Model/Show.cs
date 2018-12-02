@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
-namespace TVShows.API.Model
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model
 {
     public class Show : EntityBase
     {

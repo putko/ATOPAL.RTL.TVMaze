@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace EventBusRabbitMQ
+namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ
 {
     public interface IRabbitMQPersistentConnection
         : IDisposable

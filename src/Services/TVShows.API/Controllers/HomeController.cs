@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace TVShows.API.Controllers
+namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Controllers
 {
     public class HomeController : Controller
     {

@@ -29,18 +29,41 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Controllers
                                                [FromQuery]int pageIndex = 0)
 
         {
-            long totalItems = await repository.Get().CountAsync();
+            //long totalItems = await repository.Get().CountAsync();
 
-            List<Show> itemsOnPage = await repository.Get()
-                .OrderBy(c => c.Name)
+            List<Show> items = await repository.Get()
+                .OrderBy(s => s.Name)
+                .Include(p => p.Persons).ThenInclude(sp => sp.Person)
                 .Skip(pageSize * pageIndex)
                 .Take(pageSize)
                 .ToListAsync();
 
-            PaginatedItemsViewModel<Show> model = new PaginatedItemsViewModel<Show>(
-                pageIndex, pageSize, totalItems, itemsOnPage);
+            var itemsOnPage = items.Select(i =>
+            new
+            {
+                Id = i.TVMazeId,
+                i.Name,
+                Cast = i.Persons.OrderByDescending(p => p.Person, PersonDateOfBirthComparer.Default).Select(p => new
+                {
+                    Id = p.Person.TVMazeId,
+                    Name = p.Person.Name,
+                    Birthday = p.Person.BirthDate,
+                })
+            });
 
-            return Ok(model);
+            return Ok(itemsOnPage.ToList());
+        }
+    }
+
+    public class PersonDateOfBirthComparer : Comparer<Person>
+    {
+        public static new PersonDateOfBirthComparer Default { get; } = new PersonDateOfBirthComparer();
+
+        public override int Compare(Person x, Person y)
+        {
+            // handle nulls
+
+            return Comparer<DateTime>.Default.Compare(x.BirthDate.GetValueOrDefault(), y.BirthDate.GetValueOrDefault());
         }
     }
 }

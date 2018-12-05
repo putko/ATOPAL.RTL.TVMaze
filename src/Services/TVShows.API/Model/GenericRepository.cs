@@ -54,12 +54,14 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model
         public virtual void Insert(TEntity entity)
         {
             dbSet.Add(entity);
+            context.SaveChanges();
         }
 
         public virtual void Delete(int id)
         {
             TEntity entityToDelete = dbSet.Find(id);
             Delete(entityToDelete);
+            context.SaveChanges();
         }
 
         public virtual void Delete(TEntity entityToDelete)
@@ -69,12 +71,14 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model
                 dbSet.Attach(entityToDelete);
             }
             dbSet.Remove(entityToDelete);
+            context.SaveChanges();
         }
 
         public virtual void Update(TEntity entityToUpdate)
         {
             dbSet.Attach(entityToUpdate);
             context.Entry(entityToUpdate).State = EntityState.Modified;
+            context.SaveChanges();
         }
     }
 }

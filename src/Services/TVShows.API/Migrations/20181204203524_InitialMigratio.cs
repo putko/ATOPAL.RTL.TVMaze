@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
 {
-    public partial class MyFirstMigration : Migration
+    public partial class InitialMigratio : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -15,7 +15,8 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: false),
-                    BirthDate = table.Column<DateTime>(nullable: false)
+                    BirthDate = table.Column<DateTime>(nullable: false),
+                    TVMazeId = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,7 +30,8 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
                     Id = table.Column<int>(nullable: false)
                         .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: false),
-                    Timestamp = table.Column<byte[]>(rowVersion: true, nullable: true)
+                    TVMazeId = table.Column<int>(nullable: false),
+                    Timestamp = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {

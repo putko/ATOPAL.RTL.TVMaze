@@ -2,7 +2,6 @@
 using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common;
 using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
 using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
-using BuildingBlocks.EventBus;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;

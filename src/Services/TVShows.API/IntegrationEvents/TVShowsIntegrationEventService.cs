@@ -38,7 +38,7 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.IntegrationEvents
             catch (Exception)
             {
                 await _eventLogService.MarkEventAsFailedAsync(evt.Id);
-            }            
+            }
         }
 
         public async Task SaveEventAndCatalogContextChangesAsync(IntegrationEvent evt)
@@ -46,7 +46,8 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.IntegrationEvents
             //Use of an EF Core resiliency strategy when using multiple DbContexts within an explicit BeginTransaction():
             //See: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency            
             await ResilientTransaction.New(_context)
-                .ExecuteAsync(async () => {
+                .ExecuteAsync(async () =>
+                {
                     // Achieving atomicity between original catalog database operation and the IntegrationEventLog thanks to a local transaction
                     await _context.SaveChangesAsync();
                     await _eventLogService.SaveEventAsync(evt, _context.Database.CurrentTransaction.GetDbTransaction());

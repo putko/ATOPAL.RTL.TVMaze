@@ -1,33 +1,29 @@
-﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
-using AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.Configuration;
-using AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.IntegrationEvents;
+﻿using AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.Tasks
 {
-    public class TVMazeUpdateChecker
+    public class TVMazeScrapperService
         : BackgroundService
     {
-        private readonly ILogger<TVMazeUpdateChecker> _logger;
+        private readonly ILogger<TVMazeScrapperService> _logger;
         private readonly BackgroundTaskSettings _settings;
-        private readonly IEventBus _eventBus;
-
-        public TVMazeUpdateChecker(IOptions<BackgroundTaskSettings> settings,
-                                         IEventBus eventBus,
-                                         ILogger<TVMazeUpdateChecker> logger)
+        private readonly TVMazeUpdater _updater;
+        public TVMazeScrapperService(IOptions<BackgroundTaskSettings> settings,
+                                    ILogger<TVMazeScrapperService> logger,
+                                    TVMazeUpdater updater)
         {
             _settings = settings?.Value ?? throw new ArgumentNullException(nameof(settings));
-            _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-
+            _updater = updater ?? throw new ArgumentNullException(nameof(updater));
         }
+
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
@@ -38,20 +34,17 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.Tasks
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogDebug($"TVMazeUpdateChecker background task is doing background work.");
-
-                CheckConfirmedGracePeriodOrders();
-
-                await Task.Delay(_settings.CheckUpdateTime, stoppingToken);
+                Stopwatch stopWatch = new Stopwatch();
+                stopWatch.Start();
+                await _updater.CheckForUpdates();
+                stopWatch.Stop();
+                long delay = Math.Max(_settings.UpdateCheckInterval - stopWatch.ElapsedMilliseconds, 0L);
+                await Task.Delay(TimeSpan.FromMilliseconds(delay), stoppingToken);
             }
 
             _logger.LogDebug($"TVMazeUpdateChecker background task is stopping.");
 
             await Task.CompletedTask;
-        }
-
-        private void CheckConfirmedGracePeriodOrders()
-        {
-            _logger.LogDebug($"Checking tvmaze updates..");
         }
     }
 }

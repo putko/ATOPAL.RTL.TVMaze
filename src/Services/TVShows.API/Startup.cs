@@ -1,20 +1,23 @@
 ﻿using Autofac;
 using Autofac.Extensions.DependencyInjection;
-using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF;
-using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF.Services;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common;
+using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
 using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ;
 using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure;
 using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.Filters;
 using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.IntegrationEvents;
+using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.IntegrationEvents.EventHandling;
+using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.IntegrationEvents.Events;
 using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
 using RabbitMQ.Client;
 using System;
 using System.Data.Common;
@@ -36,6 +39,9 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API
         {
             services.AddCustomMVC(Configuration)
                     .AddCustomDbContext(Configuration)
+                    .AddCustomOptions(Configuration)
+                    .AddIntegrationServices(Configuration)
+                    .AddEventBus(Configuration)
                     .AddSwagger();
 
             services.AddTransient<DbContext, TVShowContext>();
@@ -49,8 +55,8 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
-            
-            var pathBase = Configuration["PATH_BASE"];
+
+            string pathBase = Configuration["PATH_BASE"];
 
             if (!string.IsNullOrEmpty(pathBase))
             {
@@ -73,8 +79,8 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API
         }
         protected virtual void ConfigureEventBus(IApplicationBuilder app)
         {
-            //var eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
-            //eventBus.Subscribe<ShowUpdatedIntegrationEvent, ShowUpdatedIntegrationEventHandler>();
+            IEventBus eventBus = app.ApplicationServices.GetRequiredService<IEventBus>();
+            eventBus.Subscribe<ShowUpdatedIntegrationEvent, ShowUpdatedIntegrationEventHandler>();
         }
     }
 
@@ -115,18 +121,6 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API
                 options.ConfigureWarnings(warnings => warnings.Throw(RelationalEventId.QueryClientEvaluationWarning));
                 //Check Client vs. Server evaluation: https://docs.microsoft.com/en-us/ef/core/querying/client-eval
             });
-
-            services.AddDbContext<IntegrationEventLogContext>(options =>
-            {
-                options.UseSqlServer(configuration["ConnectionString"],
-                                     sqlServerOptionsAction: sqlOptions =>
-                                     {
-                                         sqlOptions.MigrationsAssembly(typeof(Startup).GetTypeInfo().Assembly.GetName().Name);
-                                         //Configuring Connection Resiliency: https://docs.microsoft.com/en-us/ef/core/miscellaneous/connection-resiliency 
-                                         sqlOptions.EnableRetryOnFailure(maxRetryCount: 10, maxRetryDelay: TimeSpan.FromSeconds(30), errorNumbersToAdd: null);
-                                     });
-            });
-
             return services;
         }
 
@@ -151,44 +145,38 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API
 
 
 
-        //public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
-        //{
-        //    services.Configure<CatalogSettings>(configuration);
-        //    services.Configure<ApiBehaviorOptions>(options =>
-        //    {
-        //        options.InvalidModelStateResponseFactory = context =>
-        //        {
-        //            var problemDetails = new ValidationProblemDetails(context.ModelState)
-        //            {
-        //                Instance = context.HttpContext.Request.Path,
-        //                Status = StatusCodes.Status400BadRequest,
-        //                Detail = "Please refer to the errors property for additional details."
-        //            };
+        public static IServiceCollection AddCustomOptions(this IServiceCollection services, IConfiguration configuration)
+        {
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var problemDetails = new ValidationProblemDetails(context.ModelState)
+                    {
+                        Instance = context.HttpContext.Request.Path,
+                        Status = StatusCodes.Status400BadRequest,
+                        Detail = "Please refer to the errors property for additional details."
+                    };
 
-        //            return new BadRequestObjectResult(problemDetails)
-        //            {
-        //                ContentTypes = { "application/problem+json", "application/problem+xml" }
-        //            };
-        //        };
-        //    });
+                    return new BadRequestObjectResult(problemDetails)
+                    {
+                        ContentTypes = { "application/problem+json", "application/problem+xml" }
+                    };
+                };
+            });
 
-        //    return services;
-        //}
+            return services;
+        }
 
 
 
         public static IServiceCollection AddIntegrationServices(this IServiceCollection services, IConfiguration configuration)
         {
-            services.AddTransient<Func<DbConnection, IIntegrationEventLogService>>(
-                sp => (DbConnection c) => new IntegrationEventLogService(c));
-
-            services.AddTransient<ITVShowsIntegrationEventService, TVShowsIntegrationEventService>();
-
             services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
             {
-                var logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+                ILogger<DefaultRabbitMQPersistentConnection> logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
 
-                var factory = new ConnectionFactory()
+                ConnectionFactory factory = new ConnectionFactory()
                 {
                     HostName = configuration["EventBusConnection"]
                 };
@@ -213,50 +201,33 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API
             });
 
             return services;
+            
         }
 
-        //public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
-        //{
-        //    var subscriptionClientName = configuration["SubscriptionClientName"];
+        public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
+        {
+            string subscriptionClientName = configuration["SubscriptionClientName"];
 
-        //    if (configuration.GetValue<bool>("AzureServiceBusEnabled"))
-        //    {
-        //        services.AddSingleton<IEventBus, EventBusServiceBus>(sp =>
-        //        {
-        //            var serviceBusPersisterConnection = sp.GetRequiredService<IServiceBusPersisterConnection>();
-        //            var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
-        //            var logger = sp.GetRequiredService<ILogger<EventBusServiceBus>>();
-        //            var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+            services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
+             {
+                 IRabbitMQPersistentConnection rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
+                 ILifetimeScope iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
+                 ILogger<EventBusRabbitMQ> logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
+                 var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
 
-        //            return new EventBusServiceBus(serviceBusPersisterConnection, logger,
-        //                eventBusSubcriptionsManager, subscriptionClientName, iLifetimeScope);
-        //        });
+                 int retryCount = 5;
+                 if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
+                 {
+                     retryCount = int.Parse(configuration["EventBusRetryCount"]);
+                 }
 
-        //    }
-        //    else
-        //    {
-        //        services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
-        //        {
-        //            var rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
-        //            var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
-        //            var logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
-        //            var eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+                 return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
+             });
 
-        //            var retryCount = 5;
-        //            if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
-        //            {
-        //                retryCount = int.Parse(configuration["EventBusRetryCount"]);
-        //            }
+            services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
+            services.AddTransient<ShowUpdatedIntegrationEventHandler>();
 
-        //            return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
-        //        });
-        //    }
-
-        //    services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
-        //    services.AddTransient<OrderStatusChangedToAwaitingValidationIntegrationEventHandler>();
-        //    services.AddTransient<OrderStatusChangedToPaidIntegrationEventHandler>();
-
-        //    return services;
-        //}
+            return services;
+        }
     }
 }

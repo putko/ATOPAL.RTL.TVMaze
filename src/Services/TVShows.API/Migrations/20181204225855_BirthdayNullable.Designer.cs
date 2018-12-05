@@ -5,38 +5,41 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
 {
     [DbContext(typeof(TVShowContext))]
-    [Migration("20181128231529_MyFirstMigration")]
-    partial class MyFirstMigration
+    [Migration("20181204225855_BirthdayNullable")]
+    partial class BirthdayNullable
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "2.1.4-rtm-31024")
+                .HasAnnotation("ProductVersion", "2.1.3-rtm-32065")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("TVShows.API.Model.Person", b =>
+            modelBuilder.Entity("AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model.Person", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime>("BirthDate");
+                    b.Property<DateTime?>("BirthDate");
 
                     b.Property<string>("Name")
                         .IsRequired();
+
+                    b.Property<int>("TVMazeId");
 
                     b.HasKey("Id");
 
                     b.ToTable("Person");
                 });
 
-            modelBuilder.Entity("TVShows.API.Model.Show", b =>
+            modelBuilder.Entity("AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model.Show", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -45,16 +48,16 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
                     b.Property<string>("Name")
                         .IsRequired();
 
-                    b.Property<byte[]>("Timestamp")
-                        .IsConcurrencyToken()
-                        .ValueGeneratedOnAddOrUpdate();
+                    b.Property<int>("TVMazeId");
+
+                    b.Property<long>("Timestamp");
 
                     b.HasKey("Id");
 
                     b.ToTable("Show");
                 });
 
-            modelBuilder.Entity("TVShows.API.Model.ShowPerson", b =>
+            modelBuilder.Entity("AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model.ShowPerson", b =>
                 {
                     b.Property<int>("PersonId");
 
@@ -67,14 +70,14 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
                     b.ToTable("ShowPerson");
                 });
 
-            modelBuilder.Entity("TVShows.API.Model.ShowPerson", b =>
+            modelBuilder.Entity("AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model.ShowPerson", b =>
                 {
-                    b.HasOne("TVShows.API.Model.Person", "Person")
+                    b.HasOne("AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model.Person", "Person")
                         .WithMany("Shows")
                         .HasForeignKey("PersonId")
                         .OnDelete(DeleteBehavior.Cascade);
 
-                    b.HasOne("TVShows.API.Model.Show", "Show")
+                    b.HasOne("AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model.Show", "Show")
                         .WithMany("Persons")
                         .HasForeignKey("ShowId")
                         .OnDelete(DeleteBehavior.Cascade);

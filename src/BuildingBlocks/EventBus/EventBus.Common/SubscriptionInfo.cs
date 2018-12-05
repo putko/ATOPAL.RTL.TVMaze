@@ -1,7 +1,7 @@
 ﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common;
 using System;
 
-namespace BuildingBlocks.EventBus
+namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
 {
     public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptionsManager
     {

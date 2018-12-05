@@ -8,18 +8,22 @@ services:
     ports:
       - "5443:1433"    # Important: In a production environment your should remove the external port
 
-   rabbitmq:
+  rabbitmq:
     ports:
-      - "15672:15672"  # Important: In a production environment your should remove the external port
-      - "5672:5672"    # Important: In a production environment your should remove the external port
+      - "15673:15672"  # Important: In a production environment your should remove the external port
+      - "5673:5672"    # Important: In a production environment your should remove the external port
+  scrapper.cache:
+    ports:
+      - "16379:6379"    # Important: In a production environment your should remove the external port
   tvshows.api:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_HTTPS_PORT=3002
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - EventBusConnection=${ESHOP_AZURE_SERVICE_BUS:-rabbitmq}
+      - EventBusUserName=${ESHOP_SERVICE_BUS_USERNAME}
+      - EventBusPassword=${ESHOP_SERVICE_BUS_PASSWORD}   
     ports:
-      - "3001:80"
-      - "3002:443"
+      - "5001:80"
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
@@ -27,11 +31,17 @@ services:
   tvmaze.scrapper:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
-      - ASPNETCORE_URLS=https://+:443;http://+:80
-      - ASPNETCORE_HTTPS_PORT=44338
+      - ASPNETCORE_URLS=http://0.0.0.0:80
+      - ConnectionString=${ESHOP_AZURE_REDIS_BASKET_DB:-scrapper.cache}
+      - EventBusConnection=${ESHOP_AZURE_SERVICE_BUS:-rabbitmq}
+      - EventBusUserName=${ESHOP_SERVICE_BUS_USERNAME}
+      - EventBusPassword=${ESHOP_SERVICE_BUS_PASSWORD}          
+      - UpdateCheckInterval= 30000
+      - RateLimitOccurences=20
+      - RateLimitSeconds=10
+      - TVMazeAPIBaseURL=http://api.tvmaze.com/
     ports:
-      - "65022:80"
-      - "44338:443"
+      - "5002:80"
     volumes:
       - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
       - ${APPDATA}/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro

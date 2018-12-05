@@ -19,10 +19,9 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model
 
         public string Name { get; set; }
 
-        public DateTime BirthDate { get; set; }
+        public DateTime? BirthDate { get; set; }
+        public int TVMazeId { get; set; }
 
         public virtual IList<ShowPerson> Shows { get; set; }
-
-
     }
 }

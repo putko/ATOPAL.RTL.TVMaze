@@ -2,7 +2,7 @@
 using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
 using System;
 using System.Collections.Generic;
-using static BuildingBlocks.EventBus.InMemoryEventBusSubscriptionsManager;
+using static AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.InMemoryEventBusSubscriptionsManager;
 
 namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
 {

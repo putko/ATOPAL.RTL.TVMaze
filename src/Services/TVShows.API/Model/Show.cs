@@ -22,8 +22,8 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model
         public string Name { get; set; }
 
         public virtual IList<ShowPerson> Persons { get; set; }
+        public int TVMazeId { get; set; }
 
-        [Timestamp]
-        public byte[] Timestamp { get; set; }
+        public long Timestamp { get; set; }
     }
 }

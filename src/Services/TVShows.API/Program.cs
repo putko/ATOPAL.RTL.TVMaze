@@ -1,5 +1,4 @@
-﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.IntegrationEventLogEF;
-using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure;
+﻿using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure;
 using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +15,7 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API
                  .MigrateDbContext<TVShowContext>((context, services) =>
                  {
                  })
-                .MigrateDbContext<IntegrationEventLogContext>((_, __) => { }).Run();
+                .Run();
         }
 
         public static IWebHost CreateWebHost(string[] args)

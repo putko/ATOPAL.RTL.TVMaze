@@ -16,8 +16,9 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.EntityConfigur
             builder.HasKey(p => p.Id);
 
             // Set mapping for columns
+            builder.Property(p => p.TVMazeId).IsRequired();
             builder.Property(p => p.Name).IsRequired();
-            builder.Property(p => p.BirthDate).IsRequired();
+            builder.Property(p => p.BirthDate);
         }
     }
 }

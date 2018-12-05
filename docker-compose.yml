@@ -3,20 +3,27 @@ version: '3.4'
 services:
   sql.data:
     image: microsoft/mssql-server-linux:2017-latest
-
-   rabbitmq:
+  
+  scrapper.cache:
+    image: redis:alpine
+  
+  rabbitmq:
     image: rabbitmq:3-management-alpine
 
   tvshows.api:
-    image: ${DOCKER_REGISTRY}tvshowsapi
+    image: ${DOCKER_REGISTRY}tvshowsapi:{TAG:-latest}
     build:
       context: .
       dockerfile: src/Services/TVShows.API/Dockerfile
     depends_on:
       - sql.data
+      - rabbitmq
+
   tvmaze.scrapper:
-    image: ${DOCKER_REGISTRY}tvmazescrapper
+    image: ${DOCKER_REGISTRY}tvmazescrapper:{TAG:-latest}
     build:
       context: .
       dockerfile: src/Services/TVMaze.Scrapper/Dockerfile
-
+    depends_on:
+      - rabbitmq
+      - scrapper.cache

@@ -10,27 +10,25 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Remove="Properties\launchSettings.json" />
+    <Compile Remove="IntegrationEvents\ITVShowsIntegrationEventService.cs" />
+    <Compile Remove="IntegrationEvents\TVShowsIntegrationEventService.cs" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Autofac" Version="4.8.1" />
     <PackageReference Include="Autofac.Extensions.DependencyInjection" Version="4.3.1" />
     <PackageReference Include="Microsoft.AspNetCore.App" />
-    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.0.1916590" />
-    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
+    <PackageReference Include="Polly" Version="6.1.2" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="4.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBus.Common\Common.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBusRabbitMQ\RabbitMQ.csproj" />
-    <ProjectReference Include="..\..\BuildingBlocks\EventBus\IntegrationEventLogEF\IntegrationEventLogEF.csproj" />
+    <ProjectReference Include="..\..\BuildingBlocks\TVMaze.Domain\TVMaze.Domain.csproj" />
   </ItemGroup>
 
 </Project>

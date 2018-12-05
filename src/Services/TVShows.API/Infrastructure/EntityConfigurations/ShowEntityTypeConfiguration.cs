@@ -17,9 +17,10 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.EntityConfigur
 
             // Set mapping for columns
             builder.Property(p => p.Name).IsRequired();
+            builder.Property(p => p.TVMazeId).IsRequired();
 
             // Set concurrency token for entity
-            builder.Property(p => p.Timestamp).IsConcurrencyToken();
+            builder.Property(p => p.Timestamp);
 
         }
     }

@@ -4,14 +4,16 @@ using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
 {
     [DbContext(typeof(TVShowContext))]
-    partial class TVShowContextModelSnapshot : ModelSnapshot
+    [Migration("20181204203524_InitialMigratio")]
+    partial class InitialMigratio
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,7 +27,7 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
                         .ValueGeneratedOnAdd()
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-                    b.Property<DateTime?>("BirthDate");
+                    b.Property<DateTime>("BirthDate");
 
                     b.Property<string>("Name")
                         .IsRequired();

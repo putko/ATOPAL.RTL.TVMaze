@@ -1,21 +1,21 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.Exception
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.Exception
 {
-    public class TVShowsDomainException : System.Exception
+    using System;
+
+    public class TVShowsDomainException : Exception
     {
         public TVShowsDomainException()
-        { }
+        {
+        }
 
         public TVShowsDomainException(string message)
-            : base(message)
-        { }
+            : base(message: message)
+        {
+        }
 
-        public TVShowsDomainException(string message, System.Exception innerException)
-            : base(message, innerException)
-        { }
+        public TVShowsDomainException(string message, Exception innerException)
+            : base(message: message, innerException: innerException)
+        {
+        }
     }
 }

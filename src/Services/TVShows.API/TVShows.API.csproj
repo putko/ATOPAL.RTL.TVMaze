@@ -5,8 +5,8 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <UserSecretsId>1a2e783e-7f4b-4d46-8fcf-d9867a4121e0</UserSecretsId>
     <DockerComposeProjectPath>..\..\..\docker-compose.dcproj</DockerComposeProjectPath>
-    <AssemblyName>AUTOPOAL.RTL.TVMaze.Services.TVShows.API</AssemblyName>
-    <RootNamespace>AUTOPOAL.RTL.TVMaze.Services.TVShows.API</RootNamespace>
+    <AssemblyName>AUTOPAL.RTL.TVMaze.Services.TVShows.API</AssemblyName>
+    <RootNamespace>AUTOPAL.RTL.TVMaze.Services.TVShows.API</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

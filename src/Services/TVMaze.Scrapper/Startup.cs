@@ -1,29 +1,27 @@
-﻿using Autofac;
-using Autofac.Extensions.DependencyInjection;
-using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common;
-using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
-using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ;
-using AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.Configuration;
-using AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.Model;
-using AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.Tasks;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using RabbitMQ.Client;
-using StackExchange.Redis;
-using System;
-using System.Data.Common;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVMaze.Scrapper
 {
+    using System;
+    using Autofac;
+    using Autofac.Extensions.DependencyInjection;
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common;
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ;
+    using AUTOPAL.RTL.TVMaze.Services.TVMaze.Scrapper.Configuration;
+    using AUTOPAL.RTL.TVMaze.Services.TVMaze.Scrapper.Model;
+    using AUTOPAL.RTL.TVMaze.Services.TVMaze.Scrapper.Tasks;
+    using Microsoft.AspNetCore.Builder;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using RabbitMQ.Client;
+    using IHostingEnvironment = Microsoft.AspNetCore.Hosting.IHostingEnvironment;
+
     public class Startup
     {
         public Startup(IConfiguration configuration)
         {
-            Configuration = configuration;
+            this.Configuration = configuration;
         }
 
         public IConfiguration Configuration { get; }
@@ -33,175 +31,96 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper
         {
             //configure settings
 
-            services.Configure<BackgroundTaskSettings>(Configuration);
+            services.Configure<BackgroundTaskSettings>(config: this.Configuration);
             services.AddOptions()
-                    .AddCustomDbContext(Configuration)
-                    .AddIntegrationServices(Configuration)
-                    .AddEventBus(Configuration);
-            
-            
+                .AddCustomDbContext(configuration: this.Configuration)
+                .AddIntegrationServices(configuration: this.Configuration)
+                .AddEventBus(configuration: this.Configuration);
+
+
             //configure background task
 
-            services.AddSingleton<IHostedService, TVMazeScrapperService>();
-            services.AddTransient<TVMazeUpdater>();
+            services.AddSingleton<IHostedService, TvMazeScrapperService>();
+            services.AddTransient<TvMazeUpdater>();
 
-            services.Configure<ScrapperSettings>(Configuration);
-
+            services.Configure<ScrapperSettings>(config: this.Configuration);
 
 
             //configure event bus related services
 
-            services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
+            services.AddSingleton<IRabbitMqPersistentConnection>(implementationFactory: sp =>
             {
-                ILogger<DefaultRabbitMQPersistentConnection> logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
+                var logger = sp.GetRequiredService<ILogger<DefaultRabbitMqPersistentConnection>>();
 
 
-                ConnectionFactory factory = new ConnectionFactory()
+                var factory = new ConnectionFactory
                 {
-                    HostName = Configuration["EventBusConnection"]
+                    HostName = this.Configuration[key: "EventBusConnection"]
                 };
 
-                if (!string.IsNullOrEmpty(Configuration["EventBusUserName"]))
+                if (!string.IsNullOrEmpty(value: this.Configuration[key: "EventBusUserName"]))
                 {
-                    factory.UserName = Configuration["EventBusUserName"];
+                    factory.UserName = this.Configuration[key: "EventBusUserName"];
                 }
 
-                if (!string.IsNullOrEmpty(Configuration["EventBusPassword"]))
+                if (!string.IsNullOrEmpty(value: this.Configuration[key: "EventBusPassword"]))
                 {
-                    factory.Password = Configuration["EventBusPassword"];
+                    factory.Password = this.Configuration[key: "EventBusPassword"];
                 }
 
-                int retryCount = 5;
-                if (!string.IsNullOrEmpty(Configuration["EventBusRetryCount"]))
+                var retryCount = 5;
+                if (!string.IsNullOrEmpty(value: this.Configuration[key: "EventBusRetryCount"]))
                 {
-                    retryCount = int.Parse(Configuration["EventBusRetryCount"]);
+                    retryCount = int.Parse(s: this.Configuration[key: "EventBusRetryCount"]);
                 }
 
-                return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
+                return new DefaultRabbitMqPersistentConnection(connectionFactory: factory, logger: logger,
+                    retryCount: retryCount);
             });
             services.AddTransient<IConcurrencyRepository, RedisConcurrencyRepository>();
 
-            RegisterEventBus(services);
+            this.RegisterEventBus(services: services);
 
             //create autofac based service provider
-            ContainerBuilder container = new ContainerBuilder();
-            container.Populate(services);
+            var container = new ContainerBuilder();
+            container.Populate(descriptors: services);
 
 
-            return new AutofacServiceProvider(container.Build());
+            return new AutofacServiceProvider(lifetimeScope: container.Build());
         }
 
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, Microsoft.AspNetCore.Hosting.IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
         }
 
 
         private void RegisterEventBus(IServiceCollection services)
         {
-            string subscriptionClientName = Configuration["SubscriptionClientName"];
+            var subscriptionClientName = this.Configuration[key: "SubscriptionClientName"];
 
 
-            services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
+            services.AddSingleton<IEventBus, EventBusRabbitMq>(implementationFactory: sp =>
             {
-                IRabbitMQPersistentConnection rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
-                ILifetimeScope iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
-                ILogger<EventBusRabbitMQ> logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
-                IEventBusSubscriptionsManager eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
+                var rabbitMqPersistentConnection = sp.GetRequiredService<IRabbitMqPersistentConnection>();
+                var iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
+                var logger = sp.GetRequiredService<ILogger<EventBusRabbitMq>>();
+                var eventBusSubscriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
 
-                int retryCount = 5;
-                if (!string.IsNullOrEmpty(Configuration["EventBusRetryCount"]))
+                var retryCount = 5;
+                if (!string.IsNullOrEmpty(value: this.Configuration[key: "EventBusRetryCount"]))
                 {
-                    retryCount = int.Parse(Configuration["EventBusRetryCount"]);
+                    retryCount = int.Parse(s: this.Configuration[key: "EventBusRetryCount"]);
                 }
 
-                return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
+                return new EventBusRabbitMq(persistentConnection: rabbitMqPersistentConnection, logger: logger,
+                    container: iLifetimeScope,
+                    subsManager: eventBusSubscriptionsManager, queueName: subscriptionClientName,
+                    retryCount: retryCount);
             });
 
             services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
-        }
-    }
-    public static class CustomExtensionMethods
-    {
-
-        public static IServiceCollection AddCustomDbContext(this IServiceCollection services, IConfiguration configuration)
-        {
-            //By connecting here we are making sure that our service
-            //cannot start until redis is ready. This might slow down startup,
-            //but given that there is a delay on resolving the ip address
-            //and then creating the connection it seems reasonable to move
-            //that cost to startup instead of having the first request pay the
-            //penalty.
-            services.AddSingleton<ConnectionMultiplexer>(sp =>
-            {
-                ScrapperSettings settings = sp.GetRequiredService<IOptions<ScrapperSettings>>().Value;
-                ConfigurationOptions configurationOptions = ConfigurationOptions.Parse(settings.ConnectionString, true);
-
-                configurationOptions.ResolveDns = true;
-
-                return ConnectionMultiplexer.Connect(configurationOptions);
-            });
-            return services;
-        }
-
-        public static IServiceCollection AddIntegrationServices(this IServiceCollection services, IConfiguration configuration)
-        {
-           services.AddSingleton<IRabbitMQPersistentConnection>(sp =>
-            {
-                ILogger<DefaultRabbitMQPersistentConnection> logger = sp.GetRequiredService<ILogger<DefaultRabbitMQPersistentConnection>>();
-
-                ConnectionFactory factory = new ConnectionFactory()
-                {
-                    HostName = configuration["EventBusConnection"]
-                };
-
-                if (!string.IsNullOrEmpty(configuration["EventBusUserName"]))
-                {
-                    factory.UserName = configuration["EventBusUserName"];
-                }
-
-                if (!string.IsNullOrEmpty(configuration["EventBusPassword"]))
-                {
-                    factory.Password = configuration["EventBusPassword"];
-                }
-
-                int retryCount = 5;
-                if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
-                {
-                    retryCount = int.Parse(configuration["EventBusRetryCount"]);
-                }
-
-                return new DefaultRabbitMQPersistentConnection(factory, logger, retryCount);
-            });
-
-            return services;
-
-        }
-
-        public static IServiceCollection AddEventBus(this IServiceCollection services, IConfiguration configuration)
-        {
-            string subscriptionClientName = configuration["SubscriptionClientName"];
-
-            services.AddSingleton<IEventBus, EventBusRabbitMQ>(sp =>
-            {
-                IRabbitMQPersistentConnection rabbitMQPersistentConnection = sp.GetRequiredService<IRabbitMQPersistentConnection>();
-                ILifetimeScope iLifetimeScope = sp.GetRequiredService<ILifetimeScope>();
-                ILogger<EventBusRabbitMQ> logger = sp.GetRequiredService<ILogger<EventBusRabbitMQ>>();
-                IEventBusSubscriptionsManager eventBusSubcriptionsManager = sp.GetRequiredService<IEventBusSubscriptionsManager>();
-
-                int retryCount = 5;
-                if (!string.IsNullOrEmpty(configuration["EventBusRetryCount"]))
-                {
-                    retryCount = int.Parse(configuration["EventBusRetryCount"]);
-                }
-
-                return new EventBusRabbitMQ(rabbitMQPersistentConnection, logger, iLifetimeScope, eventBusSubcriptionsManager, subscriptionClientName, retryCount);
-            });
-
-            services.AddSingleton<IEventBusSubscriptionsManager, InMemoryEventBusSubscriptionsManager>();
-
-            return services;
         }
     }
 }

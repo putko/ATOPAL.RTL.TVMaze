@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVShows.API.Model
 {
+    /// <summary>
+    /// This class exists because many-to-many relation is not supported yet by ef .net core. instead of many-to-many we make double one-to-many relation over this class.
+    /// </summary>
     public class ShowPerson
     {
         public int ShowId { get; set; }

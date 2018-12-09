@@ -1,25 +1,26 @@
-﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
-using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
-using System;
-using System.Collections.Generic;
-using static AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.InMemoryEventBusSubscriptionsManager;
-
-namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
+﻿namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
+
     public interface IEventBusSubscriptionsManager
     {
         bool IsEmpty { get; }
         event EventHandler<string> OnEventRemoved;
+
         void AddDynamicSubscription<TH>(string eventName)
-           where TH : IDynamicIntegrationEventHandler;
+            where TH : IDynamicIntegrationEventHandler;
 
         void AddSubscription<T, TH>()
-           where T : IntegrationEvent
-           where TH : IIntegrationEventHandler<T>;
+            where T : IntegrationEvent
+            where TH : IIntegrationEventHandler<T>;
 
         void RemoveSubscription<T, TH>()
-             where TH : IIntegrationEventHandler<T>
-             where T : IntegrationEvent;
+            where TH : IIntegrationEventHandler<T>
+            where T : IntegrationEvent;
+
         void RemoveDynamicSubscription<TH>(string eventName)
             where TH : IDynamicIntegrationEventHandler;
 
@@ -27,8 +28,11 @@ namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
         bool HasSubscriptionsForEvent(string eventName);
         Type GetEventTypeByName(string eventName);
         void Clear();
-        IEnumerable<SubscriptionInfo> GetHandlersForEvent<T>() where T : IntegrationEvent;
-        IEnumerable<SubscriptionInfo> GetHandlersForEvent(string eventName);
+
+        IEnumerable<InMemoryEventBusSubscriptionsManager.SubscriptionInfo> GetHandlersForEvent<T>()
+            where T : IntegrationEvent;
+
+        IEnumerable<InMemoryEventBusSubscriptionsManager.SubscriptionInfo> GetHandlersForEvent(string eventName);
         string GetEventKey<T>();
     }
 }

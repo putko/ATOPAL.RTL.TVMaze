@@ -1,9 +1,9 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVShows.API.Migrations
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Metadata;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     public partial class InitialMigratio : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -13,30 +13,26 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation(name: "SqlServer:ValueGenerationStrategy",
+                            value: SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: false),
                     BirthDate = table.Column<DateTime>(nullable: false),
                     TVMazeId = table.Column<int>(nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Person", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey(name: "PK_Person", columns: x => x.Id); });
 
             migrationBuilder.CreateTable(
                 name: "Show",
                 columns: table => new
                 {
                     Id = table.Column<int>(nullable: false)
-                        .Annotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn),
+                        .Annotation(name: "SqlServer:ValueGenerationStrategy",
+                            value: SqlServerValueGenerationStrategy.IdentityColumn),
                     Name = table.Column<string>(nullable: false),
                     TVMazeId = table.Column<int>(nullable: false),
                     Timestamp = table.Column<long>(nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Show", x => x.Id);
-                });
+                constraints: table => { table.PrimaryKey(name: "PK_Show", columns: x => x.Id); });
 
             migrationBuilder.CreateTable(
                 name: "ShowPerson",
@@ -47,7 +43,7 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ShowPerson", x => new { x.PersonId, x.ShowId });
+                    table.PrimaryKey(name: "PK_ShowPerson", columns: x => new {x.PersonId, x.ShowId});
                     table.ForeignKey(
                         name: "FK_ShowPerson_Person_PersonId",
                         column: x => x.PersonId,

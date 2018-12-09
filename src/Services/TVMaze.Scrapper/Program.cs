@@ -1,25 +1,26 @@
-﻿using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVMaze.Scrapper
 {
+    using Microsoft.AspNetCore;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Logging;
+
     public class Program
     {
-          public static void Main(string[] args)
+        public static void Main(string[] args)
         {
-            BuildWebHost(args).Run();
+            Program.BuildWebHost(args: args).Run();
         }
 
-        public static IWebHost BuildWebHost(string[] args) =>
-            WebHost.CreateDefaultBuilder(args)
+        public static IWebHost BuildWebHost(string[] args)
+        {
+            return WebHost.CreateDefaultBuilder(args: args)
                 .UseStartup<Startup>()
-                .ConfigureLogging((hostingContext, builder) =>
+                .ConfigureLogging(configureLogging: (hostingContext, builder) =>
                 {
-                    builder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
+                    builder.AddConfiguration(configuration: hostingContext.Configuration.GetSection(key: "Logging"));
                     builder.AddDebug();
                     builder.AddConsole();
                 }).Build();
+        }
     }
 }

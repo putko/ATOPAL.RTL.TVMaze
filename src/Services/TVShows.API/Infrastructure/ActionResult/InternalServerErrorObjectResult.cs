@@ -1,18 +1,14 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.ActionResult
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.ActionResult
 {
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+
     public class InternalServerErrorObjectResult : ObjectResult
     {
         public InternalServerErrorObjectResult(object error)
-            : base(error)
+            : base(value: error)
         {
-            StatusCode = StatusCodes.Status500InternalServerError;
+            this.StatusCode = StatusCodes.Status500InternalServerError;
         }
     }
 }

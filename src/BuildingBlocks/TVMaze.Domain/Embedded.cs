@@ -1,11 +1,11 @@
 ﻿namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.Domain
 {
-    using Newtonsoft.Json;
     using System.Collections.Generic;
+    using Newtonsoft.Json;
 
-    public partial class Embedded
+    public class Embedded
     {
-        [JsonProperty("cast", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(propertyName: "cast", NullValueHandling = NullValueHandling.Ignore)]
         public List<Cast> Cast { get; set; }
     }
 }

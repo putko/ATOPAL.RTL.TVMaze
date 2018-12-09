@@ -1,20 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVShows.API.Model
 {
-    public class Person : EntityBase
+    using System;
+    using System.Collections.Generic;
+
+    public sealed class Person : EntityBase
     {
         public Person()
-            : base()
         {
-            Shows = new List<ShowPerson>();
+            this.Shows = new List<ShowPerson>();
         }
 
         public Person(int id)
-            : base(id) 
+            : base(id: id)
         {
-            Shows = new List<ShowPerson>();
+            this.Shows = new List<ShowPerson>();
         }
 
         public string Name { get; set; }
@@ -22,6 +21,6 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model
         public DateTime? BirthDate { get; set; }
         public int TVMazeId { get; set; }
 
-        public virtual IList<ShowPerson> Shows { get; set; }
+        public IList<ShowPerson> Shows { get; set; }
     }
 }

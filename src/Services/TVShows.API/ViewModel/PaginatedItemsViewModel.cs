@@ -1,20 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.ViewModel
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVShows.API.ViewModel
 {
+    using System.Collections.Generic;
+
     public class PaginatedItemsViewModel<TEntity> where TEntity : class
     {
-        public int PageIndex { get; private set; }
-
-        public int PageSize { get; private set; }
-
-        public long Count { get; private set; }
-
-        public IEnumerable<TEntity> Data { get; private set; }
-
         public PaginatedItemsViewModel(int pageIndex, int pageSize, long count, IEnumerable<TEntity> data)
         {
             this.PageIndex = pageIndex;
@@ -22,5 +11,13 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.ViewModel
             this.Count = count;
             this.Data = data;
         }
+
+        public int PageIndex { get; }
+
+        public int PageSize { get; }
+
+        public long Count { get; }
+
+        public IEnumerable<TEntity> Data { get; }
     }
 }

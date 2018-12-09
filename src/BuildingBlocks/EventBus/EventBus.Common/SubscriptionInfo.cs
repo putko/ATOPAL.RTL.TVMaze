@@ -1,28 +1,28 @@
-﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common;
-using System;
-
-namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
+﻿namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
 {
+    using System;
+
     public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptionsManager
     {
         public class SubscriptionInfo
         {
-            public bool IsDynamic { get; }
-            public Type HandlerType{ get; }
-
             private SubscriptionInfo(bool isDynamic, Type handlerType)
             {
-                IsDynamic = isDynamic;
-                HandlerType = handlerType;
+                this.IsDynamic = isDynamic;
+                this.HandlerType = handlerType;
             }
+
+            public bool IsDynamic { get; }
+            public Type HandlerType { get; }
 
             public static SubscriptionInfo Dynamic(Type handlerType)
             {
-                return new SubscriptionInfo(true, handlerType);
+                return new SubscriptionInfo(isDynamic: true, handlerType: handlerType);
             }
+
             public static SubscriptionInfo Typed(Type handlerType)
             {
-                return new SubscriptionInfo(false, handlerType);
+                return new SubscriptionInfo(isDynamic: false, handlerType: handlerType);
             }
         }
     }

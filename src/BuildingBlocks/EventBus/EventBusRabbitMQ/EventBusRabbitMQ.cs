@@ -1,105 +1,91 @@
-﻿using Autofac;
-using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common;
-using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
-using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
-using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Polly;
-using Polly.Retry;
-using RabbitMQ.Client;
-using RabbitMQ.Client.Events;
-using RabbitMQ.Client.Exceptions;
-using System;
-using System.Net.Sockets;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ
+﻿namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ
 {
-    public class EventBusRabbitMQ : IEventBus, IDisposable
-    {
-        const string BROKER_NAME = "rtl_tvshows_event_bus";
+    using System;
+    using System.Net.Sockets;
+    using System.Text;
+    using System.Threading.Tasks;
+    using Autofac;
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common;
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
+    using global::RabbitMQ.Client;
+    using global::RabbitMQ.Client.Events;
+    using global::RabbitMQ.Client.Exceptions;
+    using Microsoft.Extensions.Logging;
+    using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
+    using Polly;
 
-        private readonly IRabbitMQPersistentConnection _persistentConnection;
-        private readonly ILogger<EventBusRabbitMQ> _logger;
-        private readonly IEventBusSubscriptionsManager _subsManager;
+    public class EventBusRabbitMq : IEventBus, IDisposable
+    {
+        private const string BrokerName = "rtl_tvshows_event_bus";
         private readonly ILifetimeScope _container;
-        private readonly string CONTAINER_SCOPE_NAME = "rtl_tvshows_event_bus";
+        private readonly ILogger<EventBusRabbitMq> _logger;
+
+        private readonly IRabbitMqPersistentConnection _persistentConnection;
         private readonly int _retryCount;
+        private readonly IEventBusSubscriptionsManager _subsManager;
+        private readonly string CONTAINER_SCOPE_NAME = "rtl_tvshows_event_bus";
 
         private IModel _consumerChannel;
         private string _queueName;
 
-        public EventBusRabbitMQ(IRabbitMQPersistentConnection persistentConnection, ILogger<EventBusRabbitMQ> logger,
-            ILifetimeScope container, IEventBusSubscriptionsManager subsManager, string queueName = null, int retryCount = 5)
+        public EventBusRabbitMq(IRabbitMqPersistentConnection persistentConnection, ILogger<EventBusRabbitMq> logger,
+            ILifetimeScope container, IEventBusSubscriptionsManager subsManager, string queueName = null,
+            int retryCount = 5)
         {
-            _persistentConnection = persistentConnection ?? throw new ArgumentNullException(nameof(persistentConnection));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _subsManager = subsManager ?? new InMemoryEventBusSubscriptionsManager();
-            _queueName = queueName;
-            _consumerChannel = CreateConsumerChannel();
-            _container = container;
-            _retryCount = retryCount;
-            _subsManager.OnEventRemoved += SubsManager_OnEventRemoved;
+            this._persistentConnection =
+                persistentConnection ?? throw new ArgumentNullException(paramName: nameof(persistentConnection));
+            this._logger = logger ?? throw new ArgumentNullException(paramName: nameof(logger));
+            this._subsManager = subsManager ?? new InMemoryEventBusSubscriptionsManager();
+            this._queueName = queueName;
+            this._consumerChannel = this.CreateConsumerChannel();
+            this._container = container;
+            this._retryCount = retryCount;
+            this._subsManager.OnEventRemoved += this.SubsManager_OnEventRemoved;
         }
 
-        private void SubsManager_OnEventRemoved(object sender, string eventName)
+        public void Dispose()
         {
-            if (!_persistentConnection.IsConnected)
-            {
-                _persistentConnection.TryConnect();
-            }
+            this._consumerChannel?.Dispose();
 
-            using (var channel = _persistentConnection.CreateModel())
-            {
-                channel.QueueUnbind(queue: _queueName,
-                    exchange: BROKER_NAME,
-                    routingKey: eventName);
-
-                if (_subsManager.IsEmpty)
-                {
-                    _queueName = string.Empty;
-                    _consumerChannel.Close();
-                }
-            }
+            this._subsManager.Clear();
         }
 
         public void Publish(IntegrationEvent @event)
         {
-            if (!_persistentConnection.IsConnected)
+            if (!this._persistentConnection.IsConnected)
             {
-                _persistentConnection.TryConnect();
+                this._persistentConnection.TryConnect();
             }
 
-            var policy = RetryPolicy.Handle<BrokerUnreachableException>()
+            var policy = Policy.Handle<BrokerUnreachableException>()
                 .Or<SocketException>()
-                .WaitAndRetry(_retryCount, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (ex, time) =>
-                {
-                    _logger.LogWarning(ex.ToString());
-                });
+                .WaitAndRetry(retryCount: this._retryCount,
+                    sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(value: Math.Pow(x: 2, y: retryAttempt)),
+                    onRetry: (ex, time) => { this._logger.LogWarning(message: ex.ToString()); });
 
-            using (var channel = _persistentConnection.CreateModel())
+            using (var channel = this._persistentConnection.CreateModel())
             {
                 var eventName = @event.GetType()
                     .Name;
 
-                channel.ExchangeDeclare(exchange: BROKER_NAME,
-                                    type: "direct");
+                channel.ExchangeDeclare(exchange: EventBusRabbitMq.BrokerName,
+                    type: "direct");
 
-                var message = JsonConvert.SerializeObject(@event);
-                var body = Encoding.UTF8.GetBytes(message);
+                var message = JsonConvert.SerializeObject(value: @event);
+                var body = Encoding.UTF8.GetBytes(s: message);
 
-                policy.Execute(() =>
+                policy.Execute(action: () =>
                 {
                     var properties = channel.CreateBasicProperties();
                     properties.DeliveryMode = 2; // persistent
 
-                    channel.BasicPublish(exchange: BROKER_NAME,
-                                     routingKey: eventName,
-                                     mandatory: true,
-                                     basicProperties: properties,
-                                     body: body);
+                    channel.BasicPublish(exchange: EventBusRabbitMq.BrokerName,
+                        routingKey: eventName,
+                        mandatory: true,
+                        basicProperties: properties,
+                        body: body);
                 });
             }
         }
@@ -107,99 +93,110 @@ namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ
         public void SubscribeDynamic<TH>(string eventName)
             where TH : IDynamicIntegrationEventHandler
         {
-            DoInternalSubscription(eventName);
-            _subsManager.AddDynamicSubscription<TH>(eventName);
+            this.DoInternalSubscription(eventName: eventName);
+            this._subsManager.AddDynamicSubscription<TH>(eventName: eventName);
         }
 
         public void Subscribe<T, TH>()
             where T : IntegrationEvent
             where TH : IIntegrationEventHandler<T>
         {
-            var eventName = _subsManager.GetEventKey<T>();
-            DoInternalSubscription(eventName);
-            _subsManager.AddSubscription<T, TH>();
-        }
-
-        private void DoInternalSubscription(string eventName)
-        {
-            var containsKey = _subsManager.HasSubscriptionsForEvent(eventName);
-            if (!containsKey)
-            {
-                if (!_persistentConnection.IsConnected)
-                {
-                    _persistentConnection.TryConnect();
-                }
-
-                using (var channel = _persistentConnection.CreateModel())
-                {
-                    channel.QueueBind(queue: _queueName,
-                                      exchange: BROKER_NAME,
-                                      routingKey: eventName);
-                }
-            }
+            var eventName = this._subsManager.GetEventKey<T>();
+            this.DoInternalSubscription(eventName: eventName);
+            this._subsManager.AddSubscription<T, TH>();
         }
 
         public void Unsubscribe<T, TH>()
             where TH : IIntegrationEventHandler<T>
             where T : IntegrationEvent
         {
-            _subsManager.RemoveSubscription<T, TH>();
+            this._subsManager.RemoveSubscription<T, TH>();
         }
 
         public void UnsubscribeDynamic<TH>(string eventName)
             where TH : IDynamicIntegrationEventHandler
         {
-            _subsManager.RemoveDynamicSubscription<TH>(eventName);
+            this._subsManager.RemoveDynamicSubscription<TH>(eventName: eventName);
         }
 
-        public void Dispose()
+        private void SubsManager_OnEventRemoved(object sender, string eventName)
         {
-            if (_consumerChannel != null)
+            if (!this._persistentConnection.IsConnected)
             {
-                _consumerChannel.Dispose();
+                this._persistentConnection.TryConnect();
             }
 
-            _subsManager.Clear();
+            using (var channel = this._persistentConnection.CreateModel())
+            {
+                channel.QueueUnbind(queue: this._queueName,
+                    exchange: EventBusRabbitMq.BrokerName,
+                    routingKey: eventName);
+
+                if (this._subsManager.IsEmpty)
+                {
+                    this._queueName = string.Empty;
+                    this._consumerChannel.Close();
+                }
+            }
+        }
+
+        private void DoInternalSubscription(string eventName)
+        {
+            var containsKey = this._subsManager.HasSubscriptionsForEvent(eventName: eventName);
+            if (!containsKey)
+            {
+                if (!this._persistentConnection.IsConnected)
+                {
+                    this._persistentConnection.TryConnect();
+                }
+
+                using (var channel = this._persistentConnection.CreateModel())
+                {
+                    channel.QueueBind(queue: this._queueName,
+                        exchange: EventBusRabbitMq.BrokerName,
+                        routingKey: eventName);
+                }
+            }
         }
 
         private IModel CreateConsumerChannel()
         {
-            if (!_persistentConnection.IsConnected)
+            if (!this._persistentConnection.IsConnected)
             {
-                _persistentConnection.TryConnect();
+                this._persistentConnection.TryConnect();
             }
 
-            var channel = _persistentConnection.CreateModel();
+            var channel = this._persistentConnection.CreateModel();
 
-            channel.ExchangeDeclare(exchange: BROKER_NAME,
-                                 type: "direct");
+            channel.ExchangeDeclare(exchange: EventBusRabbitMq.BrokerName,
+                type: "direct");
 
-            channel.QueueDeclare(queue: _queueName,
-                                 durable: true,
-                                 exclusive: false,
-                                 autoDelete: false,
-                                 arguments: null);
+            channel.QueueDeclare(queue: this._queueName,
+                durable: true,
+                exclusive: false,
+                autoDelete: false,
+                arguments: null);
 
 
-            var consumer = new EventingBasicConsumer(channel);
+            var consumer = new EventingBasicConsumer(model: channel);
             consumer.Received += async (model, ea) =>
             {
                 var eventName = ea.RoutingKey;
-                var message = Encoding.UTF8.GetString(ea.Body);
+                var message = Encoding.UTF8.GetString(bytes: ea.Body);
 
-                await ProcessEvent(eventName, message);
+                await this.ProcessEvent(eventName: eventName, message: message);
 
-                channel.BasicAck(ea.DeliveryTag, multiple: false);
+                channel.BasicAck(deliveryTag: ea.DeliveryTag, multiple: false);
             };
 
-            channel.BasicConsume(queue: _queueName,
-                                 autoAck: false,
-                                 consumer: consumer);
+            channel.BasicConsume(queue: this._queueName,
+                autoAck: false,
+                consumer: consumer);
 
             channel.CallbackException += (sender, ea) =>
             {
-                _consumerChannel.Dispose();
-                _consumerChannel = CreateConsumerChannel();
+                this._consumerChannel.Dispose();
+                this._consumerChannel = this.CreateConsumerChannel();
             };
 
             return channel;
@@ -207,28 +204,39 @@ namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ
 
         private async Task ProcessEvent(string eventName, string message)
         {
-            if (_subsManager.HasSubscriptionsForEvent(eventName))
+            if (this._subsManager.HasSubscriptionsForEvent(eventName: eventName))
             {
-                using (var scope = _container.BeginLifetimeScope(CONTAINER_SCOPE_NAME))
+                using (var scope = this._container.BeginLifetimeScope(tag: this.CONTAINER_SCOPE_NAME))
                 {
-                    var subscriptions = _subsManager.GetHandlersForEvent(eventName);
+                    var subscriptions = this._subsManager.GetHandlersForEvent(eventName: eventName);
                     foreach (var subscription in subscriptions)
                     {
                         if (subscription.IsDynamic)
                         {
-                            var handler = scope.ResolveOptional(subscription.HandlerType) as IDynamicIntegrationEventHandler;
-                            if (handler == null) continue;
-                            dynamic eventData = JObject.Parse(message);
-                            await handler.Handle(eventData);
+                            var handler =
+                                scope.ResolveOptional(serviceType: subscription.HandlerType) as
+                                    IDynamicIntegrationEventHandler;
+                            if (handler == null)
+                            {
+                                continue;
+                            }
+
+                            dynamic eventData = JObject.Parse(json: message);
+                            await handler.Handle(eventData: eventData);
                         }
                         else
                         {
-                            var handler = scope.ResolveOptional(subscription.HandlerType);
-                            if (handler == null) continue;
-                            var eventType = _subsManager.GetEventTypeByName(eventName);
-                            var integrationEvent = JsonConvert.DeserializeObject(message, eventType);
+                            var handler = scope.ResolveOptional(serviceType: subscription.HandlerType);
+                            if (handler == null)
+                            {
+                                continue;
+                            }
+
+                            var eventType = this._subsManager.GetEventTypeByName(eventName: eventName);
+                            var integrationEvent = JsonConvert.DeserializeObject(value: message, type: eventType);
                             var concreteType = typeof(IIntegrationEventHandler<>).MakeGenericType(eventType);
-                            await (Task)concreteType.GetMethod("Handle").Invoke(handler, new object[] { integrationEvent });
+                            await (Task) concreteType.GetMethod(name: "Handle")
+                                ?.Invoke(obj: handler, parameters: new[] {integrationEvent});
                         }
                     }
                 }

@@ -1,10 +1,10 @@
-﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
-using System.Threading.Tasks;
-
-namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions
+﻿namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions
 {
-    public interface IIntegrationEventHandler<in TIntegrationEvent> : IIntegrationEventHandler 
-        where TIntegrationEvent: IntegrationEvent
+    using System.Threading.Tasks;
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
+
+    public interface IIntegrationEventHandler<in TIntegrationEvent> : IIntegrationEventHandler
+        where TIntegrationEvent : IntegrationEvent
     {
         Task Handle(TIntegrationEvent @event);
     }

@@ -1,48 +1,54 @@
-﻿using AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.Configuration;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Options;
-using System;
-using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.Tasks
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVMaze.Scrapper.Tasks
 {
-    public class TVMazeScrapperService
+    using System;
+    using System.Diagnostics;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using AUTOPAL.RTL.TVMaze.Services.TVMaze.Scrapper.Configuration;
+    using Microsoft.Extensions.Hosting;
+    using Microsoft.Extensions.Logging;
+    using Microsoft.Extensions.Options;
+
+    public class TvMazeScrapperService
         : BackgroundService
     {
-        private readonly ILogger<TVMazeScrapperService> _logger;
+        private readonly ILogger<TvMazeScrapperService> _logger;
         private readonly BackgroundTaskSettings _settings;
-        private readonly TVMazeUpdater _updater;
-        public TVMazeScrapperService(IOptions<BackgroundTaskSettings> settings,
-                                    ILogger<TVMazeScrapperService> logger,
-                                    TVMazeUpdater updater)
+        private readonly TvMazeUpdater _updater;
+
+        public TvMazeScrapperService(IOptions<BackgroundTaskSettings> settings,
+            ILogger<TvMazeScrapperService> logger,
+            TvMazeUpdater updater)
         {
-            _settings = settings?.Value ?? throw new ArgumentNullException(nameof(settings));
-            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
-            _updater = updater ?? throw new ArgumentNullException(nameof(updater));
+            this._settings = settings?.Value ?? throw new ArgumentNullException(paramName: nameof(settings));
+            this._logger = logger ?? throw new ArgumentNullException(paramName: nameof(logger));
+            this._updater = updater ?? throw new ArgumentNullException(paramName: nameof(updater));
         }
 
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
-            _logger.LogDebug($"TVMazeUpdateChecker task is starting.");
+            this._logger.LogDebug(message: "TVMazeUpdateChecker task is starting.");
 
-            stoppingToken.Register(() => _logger.LogDebug($"#1 TVMazeUpdateChecker background task is stopping."));
+            stoppingToken.Register(callback: () =>
+                this._logger.LogDebug(message: "#1 TVMazeUpdateChecker background task is stopping."));
 
             while (!stoppingToken.IsCancellationRequested)
             {
-                _logger.LogDebug($"TVMazeUpdateChecker background task is doing background work.");
-                Stopwatch stopWatch = new Stopwatch();
+                this._logger.LogDebug(message: "TVMazeUpdateChecker background task is doing background work.");
+                var stopWatch = new Stopwatch();
                 stopWatch.Start();
-                await _updater.CheckForUpdates();
+                this._updater.CheckForUpdates();
                 stopWatch.Stop();
-                long delay = Math.Max(_settings.UpdateCheckInterval - stopWatch.ElapsedMilliseconds, 0L);
-                await Task.Delay(TimeSpan.FromMilliseconds(delay), stoppingToken);
+                // Find the execution time roughly. (roughtly because stopwatch is effected from cpu core efficiency)
+                var delay = Math.Max(val1: this._settings.UpdateCheckInterval - stopWatch.ElapsedMilliseconds,
+                    val2: 0L);
+
+                // use the execution time to determine if a delay is needed or execution is needed to repeat immediately. 
+                await Task.Delay(delay: TimeSpan.FromMilliseconds(value: delay), cancellationToken: stoppingToken);
             }
 
-            _logger.LogDebug($"TVMazeUpdateChecker background task is stopping.");
+            this._logger.LogDebug(message: "TVMazeUpdateChecker background task is stopping.");
 
             await Task.CompletedTask;
         }

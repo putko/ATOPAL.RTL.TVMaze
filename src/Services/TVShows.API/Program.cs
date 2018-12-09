@@ -1,44 +1,42 @@
-﻿using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure;
-using Microsoft.AspNetCore;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
-using System.IO;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVShows.API
 {
+    using System.IO;
+    using AUTOPAL.RTL.TVMaze.Services.TVShows.API.Infrastructure;
+    using Microsoft.AspNetCore;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.Extensions.Configuration;
+    using Microsoft.Extensions.Logging;
+
     public class Program
     {
         public static void Main(string[] args)
         {
-            CreateWebHost(args)
-                 .MigrateDbContext<TVShowContext>((context, services) =>
-                 {
-                 })
+            Program.CreateWebHost(args: args)
+                .MigrateDbContext<TVShowContext>(seeder: (context, services) => { })
                 .Run();
         }
 
         public static IWebHost CreateWebHost(string[] args)
         {
-            return WebHost.CreateDefaultBuilder(args)
-               .UseStartup<Startup>()
-                  .UseContentRoot(Directory.GetCurrentDirectory())
-                  .ConfigureAppConfiguration((builderContext, config) =>
-                  {
-                      IConfigurationRoot builtConfig = config.Build();
+            return WebHost.CreateDefaultBuilder(args: args)
+                .UseStartup<Startup>()
+                .UseContentRoot(contentRoot: Directory.GetCurrentDirectory())
+                .ConfigureAppConfiguration(configureDelegate: (builderContext, config) =>
+                {
+                    var builtConfig = config.Build();
 
-                      ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
+                    var configurationBuilder = new ConfigurationBuilder();
 
-                      configurationBuilder.AddEnvironmentVariables();
+                    configurationBuilder.AddEnvironmentVariables();
 
-                      config.AddConfiguration(configurationBuilder.Build());
-                  })
-                  .ConfigureLogging((hostingContext, builder) =>
-                  {
-                      builder.AddConfiguration(hostingContext.Configuration.GetSection("Logging"));
-                      builder.AddConsole();
-                      builder.AddDebug();
-                  }).Build();
+                    config.AddConfiguration(config: configurationBuilder.Build());
+                })
+                .ConfigureLogging(configureLogging: (hostingContext, builder) =>
+                {
+                    builder.AddConfiguration(configuration: hostingContext.Configuration.GetSection(key: "Logging"));
+                    builder.AddConsole();
+                    builder.AddDebug();
+                }).Build();
         }
     }
 }

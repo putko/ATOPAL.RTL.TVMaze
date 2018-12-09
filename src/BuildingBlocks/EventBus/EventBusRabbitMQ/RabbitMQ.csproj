@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
-    <RootNamespace>AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ</RootNamespace>
-    <AssemblyName>AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ</AssemblyName>
+    <RootNamespace>AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ</RootNamespace>
+    <AssemblyName>AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>

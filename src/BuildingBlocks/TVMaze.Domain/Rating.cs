@@ -2,9 +2,9 @@
 {
     using Newtonsoft.Json;
 
-    public partial class Rating
+    public class Rating
     {
-        [JsonProperty("average", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(propertyName: "average", NullValueHandling = NullValueHandling.Ignore)]
         public double Average { get; set; }
     }
 }

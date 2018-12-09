@@ -19,9 +19,9 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - EventBusConnection=${ESHOP_AZURE_SERVICE_BUS:-rabbitmq}
-      - EventBusUserName=${ESHOP_SERVICE_BUS_USERNAME}
-      - EventBusPassword=${ESHOP_SERVICE_BUS_PASSWORD}   
+      - EventBusConnection=${TVSHOWS_AZURE_SERVICE_BUS:-rabbitmq}
+      - EventBusUserName=${TVSHOWS_SERVICE_BUS_USERNAME}
+      - EventBusPassword=${TVSHOWS_SERVICE_BUS_PASSWORD}   
     ports:
       - "5001:80"
     volumes:
@@ -32,12 +32,12 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://0.0.0.0:80
-      - ConnectionString=${ESHOP_AZURE_REDIS_BASKET_DB:-scrapper.cache}
-      - EventBusConnection=${ESHOP_AZURE_SERVICE_BUS:-rabbitmq}
-      - EventBusUserName=${ESHOP_SERVICE_BUS_USERNAME}
-      - EventBusPassword=${ESHOP_SERVICE_BUS_PASSWORD}          
+      - ConnectionString=${TVSHOWS_AZURE_REDIS_SCRAPPER_DB:-scrapper.cache}
+      - EventBusConnection=${TVSHOWS_AZURE_SERVICE_BUS:-rabbitmq}
+      - EventBusUserName=${TVSHOWS_SERVICE_BUS_USERNAME}
+      - EventBusPassword=${TVSHOWS_SERVICE_BUS_PASSWORD}          
       - UpdateCheckInterval= 30000
-      - RateLimitOccurences=20
+      - RateLimitOccurrences=20
       - RateLimitSeconds=10
       - TVMazeAPIBaseURL=http://api.tvmaze.com/
     ports:

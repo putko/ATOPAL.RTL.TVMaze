@@ -1,8 +1,8 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Migrations
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVShows.API.Migrations
 {
+    using System;
+    using Microsoft.EntityFrameworkCore.Migrations;
+
     public partial class BirthdayNullable : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)

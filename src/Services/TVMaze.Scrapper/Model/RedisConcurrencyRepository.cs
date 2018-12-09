@@ -1,27 +1,27 @@
-﻿using Microsoft.Extensions.Logging;
-using StackExchange.Redis;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.Model
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVMaze.Scrapper.Model
 {
+    using System.Collections.Generic;
+    using System.Linq;
+    using Microsoft.Extensions.Logging;
+    using StackExchange.Redis;
+
     public class RedisConcurrencyRepository : IConcurrencyRepository
     {
+        private readonly IDatabase _database;
         private readonly ILogger<RedisConcurrencyRepository> _logger;
 
         private readonly ConnectionMultiplexer _redis;
-        private readonly IDatabase _database;
 
         public RedisConcurrencyRepository(ILoggerFactory loggerFactory, ConnectionMultiplexer redis)
         {
-            _logger = loggerFactory.CreateLogger<RedisConcurrencyRepository>();
-            _redis = redis;
-            _database = redis.GetDatabase();
+            this._logger = loggerFactory.CreateLogger<RedisConcurrencyRepository>();
+            this._redis = redis;
+            this._database = redis.GetDatabase();
         }
 
         public bool IsConcurrencyValueValid(KeyValuePair<string, long> pair)
         {
-            RedisValue data = _database.StringGetSet(pair.Key, pair.Value);
+            var data = this._database.StringGetSet(key: pair.Key, value: pair.Value);
             if (data.IsNullOrEmpty)
             {
                 return false;
@@ -32,8 +32,8 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.Model
 
         private IServer GetServer()
         {
-            System.Net.EndPoint[] endpoint = _redis.GetEndPoints();
-            return _redis.GetServer(endpoint.First());
+            var endpoint = this._redis.GetEndPoints();
+            return this._redis.GetServer(endpoint: endpoint.First());
         }
     }
 }

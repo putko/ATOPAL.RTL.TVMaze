@@ -1,26 +1,27 @@
-﻿using Newtonsoft.Json;
-using System;
-
-namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.Domain
+﻿namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.Domain
 {
-    public partial class Person
+    using System;
+    using System.ComponentModel;
+    using Newtonsoft.Json;
+
+    public class Person
     {
-        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(propertyName: "id", NullValueHandling = NullValueHandling.Ignore)]
         public int Id { get; set; }
 
-        [JsonProperty("url", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(propertyName: "url", NullValueHandling = NullValueHandling.Ignore)]
         public Uri Url { get; set; }
 
-        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(propertyName: "name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
 
-        [JsonProperty("birthday", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(propertyName: "birthday", NullValueHandling = NullValueHandling.Ignore)]
         public DateTime? Birthday { get; set; }
 
-        [JsonProperty("deathday", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(propertyName: "deathday", NullValueHandling = NullValueHandling.Ignore)]
         public object Deathday { get; set; }
 
-        [JsonProperty("gender", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(propertyName: "gender", NullValueHandling = NullValueHandling.Ignore)]
         public string Gender { get; set; }
     }
 }

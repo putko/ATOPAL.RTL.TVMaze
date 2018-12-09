@@ -1,55 +1,61 @@
-﻿using AUTOPAL.RTL.TVMaze.BuildingBlocks.Domain;
-using AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.Configuration;
-using Newtonsoft.Json;
-using RestSharp;
-using System;
-using System.Collections.Generic;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper.TVMaze
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVMaze.Scrapper.TVMaze
 {
-    public class TVMazeApi
+    using System;
+    using System.Collections.Generic;
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.Domain;
+    using AUTOPAL.RTL.TVMaze.Services.TVMaze.Scrapper.Configuration;
+    using Newtonsoft.Json;
+    using RestSharp;
+
+    public class TvMazeApi
     {
-        private readonly BackgroundTaskSettings _settings;
+        // https://www.tvmaze.com/api#shows
         private const string UpdatePath = "updates/shows";
         private const string ShowsWithCastPath = "shows/{id}?embed=cast";
-        
-        public TVMazeApi(BackgroundTaskSettings settings)
+
+        private readonly BackgroundTaskSettings _settings;
+
+        public TvMazeApi(BackgroundTaskSettings settings)
         {
-            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
+            this._settings = settings ?? throw new ArgumentNullException(paramName: nameof(settings));
         }
 
         private string Execute(RestRequest request)
         {
-            RestClient client = new RestClient
+            var client = new RestClient
             {
-                BaseUrl = new System.Uri(_settings.TVMazeAPIBaseURL)
+                BaseUrl = new Uri(uriString: this._settings.TvMazeApiBaseUrl)
             };
-            IRestResponse response = client.Execute(request);
+            var response = client.Execute(request: request);
 
             if (response.ErrorException != null)
             {
                 const string message = "Error retrieving response.  Check inner details for more info.";
-                ApplicationException exception = new ApplicationException(message, response.ErrorException);
+                var exception = new ApplicationException(message: message, innerException: response.ErrorException);
             }
+
             return response.Content;
         }
 
         public Dictionary<string, long> GetUpdates()
         {
-            RestRequest request = new RestRequest(TVMazeApi.UpdatePath, Method.GET, DataFormat.Json);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("cache-control", "no-cache");
-            var result = JsonConvert.DeserializeObject<Dictionary<string, long>>(Execute(request));
+            var request = new RestRequest(resource: TvMazeApi.UpdatePath, method: Method.GET,
+                dataFormat: DataFormat.Json);
+            request.AddHeader(name: "Content-Type", value: "application/json");
+            request.AddHeader(name: "cache-control", value: "no-cache");
+            var result = JsonConvert.DeserializeObject<Dictionary<string, long>>(value: this.Execute(request: request));
             return result;
         }
+
         public Show GetShowDetail(string showId)
         {
-            RestRequest request = new RestRequest(TVMazeApi.ShowsWithCastPath, Method.GET, DataFormat.Json);
-            request.AddHeader("Content-Type", "application/json");
-            request.AddHeader("cache-control", "no-cache");
-            request.AddParameter(new Parameter("id", showId, ParameterType.UrlSegment));
+            var request = new RestRequest(resource: TvMazeApi.ShowsWithCastPath, method: Method.GET,
+                dataFormat: DataFormat.Json);
+            request.AddHeader(name: "Content-Type", value: "application/json");
+            request.AddHeader(name: "cache-control", value: "no-cache");
+            request.AddParameter(p: new Parameter(name: "id", value: showId, type: ParameterType.UrlSegment));
 
-            var result = Show.FromJson(Execute(request));
+            var result = Show.FromJson(json: this.Execute(request: request));
             return result;
         }
     }

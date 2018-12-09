@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AssemblyName>AUTOPOAL.RTL.TVMaze.BuildingBlocks..Domain</AssemblyName>
-    <RootNamespace>AUTOPOAL.RTL.TVMaze.BuildingBlocks.Domain</RootNamespace>
+    <AssemblyName>AUTOPAL.RTL.TVMaze.BuildingBlocks..Domain</AssemblyName>
+    <RootNamespace>AUTOPAL.RTL.TVMaze.BuildingBlocks.Domain</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,21 +1,20 @@
-﻿using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Threading.Tasks;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVShows.API.Model
 {
+    using System;
+    using System.Linq;
+    using System.Linq.Expressions;
+    using System.Threading.Tasks;
+    using Microsoft.EntityFrameworkCore;
+
     public class GenericRepository<TEntity> : IGenericRepository<TEntity> where TEntity : EntityBase
     {
-        internal DbContext context;
-        internal DbSet<TEntity> dbSet;
+        internal DbContext Context;
+        internal DbSet<TEntity> DbSet;
 
         public GenericRepository(DbContext context)
         {
-            this.context = context;
-            dbSet = context.Set<TEntity>();
+            this.Context = context;
+            this.DbSet = context.Set<TEntity>();
         }
 
         public virtual IQueryable<TEntity> Get(
@@ -23,62 +22,61 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Model
             Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
             string includeProperties = "")
         {
-            IQueryable<TEntity> query = dbSet;
+            IQueryable<TEntity> query = this.DbSet;
 
             if (filter != null)
             {
-                query = query.Where(filter);
+                query = query.Where(predicate: filter);
             }
 
-            foreach (string includeProperty in includeProperties.Split
-                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var includeProperty in includeProperties.Split
+                (separator: new[] {','}, options: StringSplitOptions.RemoveEmptyEntries))
             {
-                query = query.Include(includeProperty);
+                query = query.Include(navigationPropertyPath: includeProperty);
             }
 
             if (orderBy != null)
             {
-                return orderBy(query);
+                return orderBy(arg: query);
             }
-            else
-            {
-                return query;
-            }
+
+            return query;
         }
 
-        public virtual async Task<TEntity> GetByID(int id)
+        public virtual async Task<TEntity> GetById(int id)
         {
-            return await dbSet.FindAsync(id);
+            return await this.DbSet.FindAsync(id);
         }
 
         public virtual void Insert(TEntity entity)
         {
-            dbSet.Add(entity);
-            context.SaveChanges();
+            this.DbSet.Add(entity: entity);
+            this.Context.SaveChanges();
         }
 
         public virtual void Delete(int id)
         {
-            TEntity entityToDelete = dbSet.Find(id);
-            Delete(entityToDelete);
-            context.SaveChanges();
+            var entityToDelete = this.DbSet.Find(id);
+            this.Delete(entityToDelete: entityToDelete);
+            this.Context.SaveChanges();
         }
 
         public virtual void Delete(TEntity entityToDelete)
         {
-            if (context.Entry(entityToDelete).State == EntityState.Detached)
+            if (this.Context.Entry(entity: entityToDelete).State == EntityState.Detached)
             {
-                dbSet.Attach(entityToDelete);
+                this.DbSet.Attach(entity: entityToDelete);
             }
-            dbSet.Remove(entityToDelete);
-            context.SaveChanges();
+
+            this.DbSet.Remove(entity: entityToDelete);
+            this.Context.SaveChanges();
         }
 
         public virtual void Update(TEntity entityToUpdate)
         {
-            dbSet.Attach(entityToUpdate);
-            context.Entry(entityToUpdate).State = EntityState.Modified;
-            context.SaveChanges();
+            this.DbSet.Attach(entity: entityToUpdate);
+            this.Context.Entry(entity: entityToUpdate).State = EntityState.Modified;
+            this.Context.SaveChanges();
         }
     }
 }

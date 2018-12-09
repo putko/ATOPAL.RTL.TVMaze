@@ -1,7 +1,7 @@
-﻿using System.Threading.Tasks;
-
-namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions
+﻿namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions
 {
+    using System.Threading.Tasks;
+
     public interface IDynamicIntegrationEventHandler
     {
         Task Handle(dynamic eventData);

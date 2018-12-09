@@ -4,8 +4,8 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
     <DockerTargetOS>Linux</DockerTargetOS>
     <UserSecretsId>033476e0-6c20-4258-a71e-98354616a18a</UserSecretsId>
-    <AssemblyName>AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper</AssemblyName>
-    <RootNamespace>AUTOPOAL.RTL.TVMaze.Services.TVMaze.Scrapper</RootNamespace>
+    <AssemblyName>AUTOPAL.RTL.TVMaze.Services.TVMaze.Scrapper</AssemblyName>
+    <RootNamespace>AUTOPAL.RTL.TVMaze.Services.TVMaze.Scrapper</RootNamespace>
     <DockerComposeProjectPath>..\..\..\docker-compose.dcproj</DockerComposeProjectPath>
   </PropertyGroup>
 
@@ -31,6 +31,12 @@
     <ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBus.Common\Common.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\EventBus\EventBusRabbitMQ\RabbitMQ.csproj" />
     <ProjectReference Include="..\..\BuildingBlocks\TVMaze.Domain\TVMaze.Domain.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="RabbitMQ.Client">
+      <HintPath>..\..\..\..\..\Users\atopal\.nuget\packages\rabbitmq.client\5.1.0\lib\netstandard1.5\RabbitMQ.Client.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>

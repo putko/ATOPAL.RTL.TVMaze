@@ -1,11 +1,9 @@
-﻿using RabbitMQ.Client;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ
+﻿namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.RabbitMQ
 {
-    public interface IRabbitMQPersistentConnection
+    using System;
+    using global::RabbitMQ.Client;
+
+    public interface IRabbitMqPersistentConnection
         : IDisposable
     {
         bool IsConnected { get; }

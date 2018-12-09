@@ -1,7 +1,7 @@
-﻿using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
-
-namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions
+﻿namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions
 {
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
+
     public interface IEventBus
     {
         void Publish(IntegrationEvent @event);

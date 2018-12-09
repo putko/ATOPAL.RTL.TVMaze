@@ -1,69 +1,53 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
-using AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
-
-namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
+﻿namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Abstractions;
+    using AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events;
+
     public partial class InMemoryEventBusSubscriptionsManager : IEventBusSubscriptionsManager
     {
+        private readonly List<Type> _eventTypes;
 
 
         private readonly Dictionary<string, List<SubscriptionInfo>> _handlers;
-        private readonly List<Type> _eventTypes;
-
-        public event EventHandler<string> OnEventRemoved;
 
         public InMemoryEventBusSubscriptionsManager()
         {
-            _handlers = new Dictionary<string, List<SubscriptionInfo>>();
-            _eventTypes = new List<Type>();
+            this._handlers = new Dictionary<string, List<SubscriptionInfo>>();
+            this._eventTypes = new List<Type>();
         }
 
-        public bool IsEmpty => !_handlers.Keys.Any();
-        public void Clear() => _handlers.Clear();
+        public event EventHandler<string> OnEventRemoved;
+
+        public bool IsEmpty
+        {
+            get { return !this._handlers.Keys.Any(); }
+        }
+
+        public void Clear()
+        {
+            this._handlers.Clear();
+        }
 
         public void AddDynamicSubscription<TH>(string eventName)
             where TH : IDynamicIntegrationEventHandler
         {
-            DoAddSubscription(typeof(TH), eventName, isDynamic: true);
+            this.DoAddSubscription(handlerType: typeof(TH), eventName: eventName, isDynamic: true);
         }
 
         public void AddSubscription<T, TH>()
             where T : IntegrationEvent
             where TH : IIntegrationEventHandler<T>
         {
-            var eventName = GetEventKey<T>();
+            var eventName = this.GetEventKey<T>();
 
-            DoAddSubscription(typeof(TH), eventName, isDynamic: false);
+            this.DoAddSubscription(handlerType: typeof(TH), eventName: eventName, isDynamic: false);
 
-            if (!_eventTypes.Contains(typeof(T)))
+            if (!this._eventTypes.Contains(item: typeof(T)))
             {
-                _eventTypes.Add(typeof(T));
-            }
-        }
-
-        private void DoAddSubscription(Type handlerType, string eventName, bool isDynamic)
-        {
-            if (!HasSubscriptionsForEvent(eventName))
-            {
-                _handlers.Add(eventName, new List<SubscriptionInfo>());
-            }
-
-            if (_handlers[eventName].Any(s => s.HandlerType == handlerType))
-            {
-                throw new ArgumentException(
-                    $"Handler Type {handlerType.Name} already registered for '{eventName}'", nameof(handlerType));
-            }
-
-            if (isDynamic)
-            {
-                _handlers[eventName].Add(SubscriptionInfo.Dynamic(handlerType));
-            }
-            else
-            {
-                _handlers[eventName].Add(SubscriptionInfo.Typed(handlerType));
+                this._eventTypes.Add(item: typeof(T));
             }
         }
 
@@ -71,8 +55,8 @@ namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
         public void RemoveDynamicSubscription<TH>(string eventName)
             where TH : IDynamicIntegrationEventHandler
         {
-            var handlerToRemove = FindDynamicSubscriptionToRemove<TH>(eventName);
-            DoRemoveHandler(eventName, handlerToRemove);
+            var handlerToRemove = this.FindDynamicSubscriptionToRemove<TH>(eventName: eventName);
+            this.DoRemoveHandler(eventName: eventName, subsToRemove: handlerToRemove);
         }
 
 
@@ -80,9 +64,65 @@ namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
             where TH : IIntegrationEventHandler<T>
             where T : IntegrationEvent
         {
-            var handlerToRemove = FindSubscriptionToRemove<T, TH>();
-            var eventName = GetEventKey<T>();
-            DoRemoveHandler(eventName, handlerToRemove);
+            var handlerToRemove = this.FindSubscriptionToRemove<T, TH>();
+            var eventName = this.GetEventKey<T>();
+            this.DoRemoveHandler(eventName: eventName, subsToRemove: handlerToRemove);
+        }
+
+        public IEnumerable<SubscriptionInfo> GetHandlersForEvent<T>() where T : IntegrationEvent
+        {
+            var key = this.GetEventKey<T>();
+            return this.GetHandlersForEvent(eventName: key);
+        }
+
+        public IEnumerable<SubscriptionInfo> GetHandlersForEvent(string eventName)
+        {
+            return this._handlers[key: eventName];
+        }
+
+        public bool HasSubscriptionsForEvent<T>() where T : IntegrationEvent
+        {
+            var key = this.GetEventKey<T>();
+            return this.HasSubscriptionsForEvent(eventName: key);
+        }
+
+        public bool HasSubscriptionsForEvent(string eventName)
+        {
+            return this._handlers.ContainsKey(key: eventName);
+        }
+
+        public Type GetEventTypeByName(string eventName)
+        {
+            return this._eventTypes.SingleOrDefault(predicate: t => t.Name == eventName);
+        }
+
+        public string GetEventKey<T>()
+        {
+            return typeof(T).Name;
+        }
+
+        private void DoAddSubscription(Type handlerType, string eventName, bool isDynamic)
+        {
+            if (!this.HasSubscriptionsForEvent(eventName: eventName))
+            {
+                this._handlers.Add(key: eventName, value: new List<SubscriptionInfo>());
+            }
+
+            if (this._handlers[key: eventName].Any(predicate: s => s.HandlerType == handlerType))
+            {
+                throw new ArgumentException(
+                    message: $"Handler Type {handlerType.Name} already registered for '{eventName}'",
+                    paramName: nameof(handlerType));
+            }
+
+            if (isDynamic)
+            {
+                this._handlers[key: eventName].Add(item: SubscriptionInfo.Dynamic(handlerType: handlerType));
+            }
+            else
+            {
+                this._handlers[key: eventName].Add(item: SubscriptionInfo.Typed(handlerType: handlerType));
+            }
         }
 
 
@@ -90,34 +130,27 @@ namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
         {
             if (subsToRemove != null)
             {
-                _handlers[eventName].Remove(subsToRemove);
-                if (!_handlers[eventName].Any())
+                this._handlers[key: eventName].Remove(item: subsToRemove);
+                if (!this._handlers[key: eventName].Any())
                 {
-                    _handlers.Remove(eventName);
-                    var eventType = _eventTypes.SingleOrDefault(e => e.Name == eventName);
+                    this._handlers.Remove(key: eventName);
+                    var eventType = this._eventTypes.SingleOrDefault(predicate: e => e.Name == eventName);
                     if (eventType != null)
                     {
-                        _eventTypes.Remove(eventType);
+                        this._eventTypes.Remove(item: eventType);
                     }
-                    RaiseOnEventRemoved(eventName);
-                }
 
+                    this.RaiseOnEventRemoved(eventName: eventName);
+                }
             }
         }
 
-        public IEnumerable<SubscriptionInfo> GetHandlersForEvent<T>() where T : IntegrationEvent
-        {
-            var key = GetEventKey<T>();
-            return GetHandlersForEvent(key);
-        }
-        public IEnumerable<SubscriptionInfo> GetHandlersForEvent(string eventName) => _handlers[eventName];
-
         private void RaiseOnEventRemoved(string eventName)
         {
-            var handler = OnEventRemoved;
+            var handler = this.OnEventRemoved;
             if (handler != null)
             {
-                OnEventRemoved(this, eventName);
+                this.OnEventRemoved(sender: this, e: eventName);
             }
         }
 
@@ -125,41 +158,26 @@ namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common
         private SubscriptionInfo FindDynamicSubscriptionToRemove<TH>(string eventName)
             where TH : IDynamicIntegrationEventHandler
         {
-            return DoFindSubscriptionToRemove(eventName, typeof(TH));
+            return this.DoFindSubscriptionToRemove(eventName: eventName, handlerType: typeof(TH));
         }
 
 
         private SubscriptionInfo FindSubscriptionToRemove<T, TH>()
-             where T : IntegrationEvent
-             where TH : IIntegrationEventHandler<T>
+            where T : IntegrationEvent
+            where TH : IIntegrationEventHandler<T>
         {
-            var eventName = GetEventKey<T>();
-            return DoFindSubscriptionToRemove(eventName, typeof(TH));
+            var eventName = this.GetEventKey<T>();
+            return this.DoFindSubscriptionToRemove(eventName: eventName, handlerType: typeof(TH));
         }
 
         private SubscriptionInfo DoFindSubscriptionToRemove(string eventName, Type handlerType)
         {
-            if (!HasSubscriptionsForEvent(eventName))
+            if (!this.HasSubscriptionsForEvent(eventName: eventName))
             {
                 return null;
             }
 
-            return _handlers[eventName].SingleOrDefault(s => s.HandlerType == handlerType);
-
-        }
-
-        public bool HasSubscriptionsForEvent<T>() where T : IntegrationEvent
-        {
-            var key = GetEventKey<T>();
-            return HasSubscriptionsForEvent(key);
-        }
-        public bool HasSubscriptionsForEvent(string eventName) => _handlers.ContainsKey(eventName);
-
-        public Type GetEventTypeByName(string eventName) => _eventTypes.SingleOrDefault(t => t.Name == eventName);
-
-        public string GetEventKey<T>()
-        {
-            return typeof(T).Name;
+            return this._handlers[key: eventName].SingleOrDefault(predicate: s => s.HandlerType == handlerType);
         }
     }
 }

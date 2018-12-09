@@ -1,27 +1,25 @@
-﻿using System;
-using Newtonsoft.Json;
-
-namespace AUTOPOAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events
+﻿namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.EventBus.Common.Events
 {
+    using System;
+    using Newtonsoft.Json;
+
     public class IntegrationEvent
     {
         public IntegrationEvent()
         {
-            Id = Guid.NewGuid();
-            CreationDate = DateTime.UtcNow;
+            this.Id = Guid.NewGuid();
+            this.CreationDate = DateTime.UtcNow;
         }
 
         [JsonConstructor]
         public IntegrationEvent(Guid id, DateTime createDate)
         {
-            Id = id;
-            CreationDate = createDate;
+            this.Id = id;
+            this.CreationDate = createDate;
         }
 
-        [JsonProperty]
-        public Guid Id { get; private set; }
+        [JsonProperty] public Guid Id { get; private set; }
 
-        [JsonProperty]
-        public DateTime CreationDate { get; private set; }
+        [JsonProperty] public DateTime CreationDate { get; private set; }
     }
 }

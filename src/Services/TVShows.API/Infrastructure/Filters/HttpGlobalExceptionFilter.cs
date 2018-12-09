@@ -1,18 +1,14 @@
-﻿using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.ActionResult;
-using AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.Exception;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Filters;
-using Microsoft.Extensions.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-
-namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.Filters
+﻿namespace AUTOPAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.Filters
 {
+    using System.Net;
+    using AUTOPAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.ActionResult;
+    using AUTOPAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.Exception;
+    using Microsoft.AspNetCore.Hosting;
+    using Microsoft.AspNetCore.Http;
+    using Microsoft.AspNetCore.Mvc;
+    using Microsoft.AspNetCore.Mvc.Filters;
+    using Microsoft.Extensions.Logging;
+
     public class HttpGlobalExceptionFilter : IExceptionFilter
     {
         private readonly IHostingEnvironment env;
@@ -26,39 +22,40 @@ namespace AUTOPOAL.RTL.TVMaze.Services.TVShows.API.Infrastructure.Filters
 
         public void OnException(ExceptionContext context)
         {
-            logger.LogError(new EventId(context.Exception.HResult),
-                context.Exception,
-                context.Exception.Message);
+            this.logger.LogError(eventId: new EventId(id: context.Exception.HResult),
+                exception: context.Exception,
+                message: context.Exception.Message);
 
             if (context.Exception.GetType() == typeof(TVShowsDomainException))
             {
-                var problemDetails = new ValidationProblemDetails()
+                var problemDetails = new ValidationProblemDetails
                 {
                     Instance = context.HttpContext.Request.Path,
                     Status = StatusCodes.Status400BadRequest,
                     Detail = "Please refer to the errors property for additional details."
                 };
 
-                problemDetails.Errors.Add("DomainValidations", new string[] { context.Exception.Message.ToString() });
+                problemDetails.Errors.Add(key: "DomainValidations", value: new[] {context.Exception.Message});
 
-                context.Result = new BadRequestObjectResult(problemDetails);
-                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.BadRequest;
+                context.Result = new BadRequestObjectResult(error: problemDetails);
+                context.HttpContext.Response.StatusCode = (int) HttpStatusCode.BadRequest;
             }
             else
             {
                 var json = new JsonErrorResponse
                 {
-                    Messages = new[] { "An error ocurred." }
+                    Messages = new[] {"An error ocurred."}
                 };
 
-                if (env.IsDevelopment())
+                if (this.env.IsDevelopment())
                 {
                     json.DeveloperMeesage = context.Exception;
                 }
 
-                context.Result = new InternalServerErrorObjectResult(json);
-                context.HttpContext.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
+                context.Result = new InternalServerErrorObjectResult(error: json);
+                context.HttpContext.Response.StatusCode = (int) HttpStatusCode.InternalServerError;
             }
+
             context.ExceptionHandled = true;
         }
 

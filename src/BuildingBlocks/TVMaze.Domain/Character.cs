@@ -1,16 +1,13 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.Domain
+﻿namespace AUTOPAL.RTL.TVMaze.BuildingBlocks.Domain
 {
-    public partial class Character
+    using Newtonsoft.Json;
+
+    public class Character
     {
-        [JsonProperty("id", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(propertyName: "id", NullValueHandling = NullValueHandling.Ignore)]
         public long Id { get; set; }
 
-        [JsonProperty("name", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonProperty(propertyName: "name", NullValueHandling = NullValueHandling.Ignore)]
         public string Name { get; set; }
     }
 }

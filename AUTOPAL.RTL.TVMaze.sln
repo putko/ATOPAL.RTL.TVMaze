@@ -25,6 +25,15 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TVMaze.Scrapper", "src\Serv
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TVMaze.Domain", "src\BuildingBlocks\TVMaze.Domain\TVMaze.Domain.csproj", "{2AED64AA-98DE-4C46-A3F7-6246848A8AC6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{F1840BD5-9603-4981-8633-F0A37F77DA18}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ApiGateway", "src\Api\ApiGateway\ApiGateway.csproj", "{56BFFCDD-44EC-458E-916A-A3191154C708}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "SampleApi", "SampleApi", "{7F1ED1EA-2813-4C77-B9F3-BAFB5D9172C7}"
+	ProjectSection(SolutionItems) = preProject
+		src\Api\SampleApi\configuration.json = src\Api\SampleApi\configuration.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +64,10 @@ Global
 		{2AED64AA-98DE-4C46-A3F7-6246848A8AC6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2AED64AA-98DE-4C46-A3F7-6246848A8AC6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2AED64AA-98DE-4C46-A3F7-6246848A8AC6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{56BFFCDD-44EC-458E-916A-A3191154C708}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{56BFFCDD-44EC-458E-916A-A3191154C708}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{56BFFCDD-44EC-458E-916A-A3191154C708}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{56BFFCDD-44EC-458E-916A-A3191154C708}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -68,6 +81,9 @@ Global
 		{790A1FEA-135E-481C-9223-A71130147791} = {BA3F4047-4D8A-41EA-9D01-FF635D4B0683}
 		{805CAEF7-03CC-43A7-8E91-7333E518FFE8} = {C630A441-9D41-4E4A-AA29-8F9A05FE866E}
 		{2AED64AA-98DE-4C46-A3F7-6246848A8AC6} = {C34F2EB6-8460-4A0A-BEA9-B49D2BA24E95}
+		{F1840BD5-9603-4981-8633-F0A37F77DA18} = {C7BE81AF-A4CA-4A69-B619-7C394ACD5038}
+		{56BFFCDD-44EC-458E-916A-A3191154C708} = {F1840BD5-9603-4981-8633-F0A37F77DA18}
+		{7F1ED1EA-2813-4C77-B9F3-BAFB5D9172C7} = {F1840BD5-9603-4981-8633-F0A37F77DA18}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {3A7F0C87-1F31-4323-977E-B4032DFC0918}

@@ -5,8 +5,8 @@
     <DockerTargetOS>Linux</DockerTargetOS>
     <ProjectGuid>f12d7c5b-c526-47ea-a3ee-6967865f4538</ProjectGuid>
     <DockerLaunchAction>LaunchBrowser</DockerLaunchAction>
-    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/api/shows</DockerServiceUrl>
-    <DockerServiceName>tvshows.api</DockerServiceName>
+    <DockerServiceUrl>{Scheme}://localhost:{ServicePort}/api/v1/m/shows</DockerServiceUrl>
+    <DockerServiceName>SampleApiGateway</DockerServiceName>
   </PropertyGroup>
   <ItemGroup>
     <None Include="docker-compose.override.yml">
